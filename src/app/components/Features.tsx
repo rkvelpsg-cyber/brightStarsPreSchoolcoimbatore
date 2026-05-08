@@ -74,7 +74,7 @@ export function Features() {
       <div className="container mx-auto px-4 md:px-6">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
-            Why Choose Bright Stars
+            Why Choose Birla Open Minds
           </h2>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
             Features that make us the perfect choice for your child's early

@@ -7,7 +7,7 @@ export function About() {
       <div className="container mx-auto px-4 md:px-6">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
-            About Bright Stars Play School
+            About Birla Open Minds Preschool And Day Care
           </h2>
           <div className="w-24 h-1 bg-gradient-to-r from-yellow-400 to-orange-400 mx-auto rounded-full"></div>
         </div>
@@ -35,9 +35,9 @@ export function About() {
           {/* Content Side */}
           <div className="space-y-6">
             <p className="text-lg text-gray-700 leading-relaxed">
-              Bright Stars Play School in Coimbatore is a warm and nurturing
-              preschool dedicated to providing a strong foundation for early
-              childhood development.
+              Birla Open Minds Preschool And Day Care is a warm and nurturing
+              preschool in Bengaluru East dedicated to providing a strong
+              foundation for early childhood development.
             </p>
             <p className="text-lg text-gray-700 leading-relaxed">
               Our goal is to create a joyful learning environment where children

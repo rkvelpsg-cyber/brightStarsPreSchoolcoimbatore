@@ -3,8 +3,8 @@ import { Quote, Star } from "lucide-react";
 export function Testimonials() {
   const testimonials = [
     {
-      text: "Bright Stars Play School has been wonderful for our child. The teachers are caring and the learning environment is joyful.",
-      author: "Parent, Coimbatore",
+      text: "Birla Open Minds Preschool And Day Care has been wonderful for our child. The teachers are caring and the learning environment is joyful.",
+      author: "Parent, Bengaluru East",
       rating: 5,
       color: "from-pink-400 to-rose-400",
     },
@@ -15,8 +15,8 @@ export function Testimonials() {
       color: "from-blue-400 to-cyan-400",
     },
     {
-      text: "The best preschool in Coimbatore! Our son has grown so much in confidence and creativity. Highly recommend!",
-      author: "Parent, Coimbatore",
+      text: "One of the best preschools in Bengaluru East! Our son has grown so much in confidence and creativity. Highly recommend!",
+      author: "Parent, Bengaluru East",
       rating: 5,
       color: "from-purple-400 to-indigo-400",
     },

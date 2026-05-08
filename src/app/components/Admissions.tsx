@@ -30,9 +30,9 @@ export function Admissions() {
           </h2>
 
           <p className="text-xl md:text-2xl text-white/95 mb-8 max-w-3xl mx-auto leading-relaxed">
-            Give your child the best start in life at Bright Stars Play School.
-            Admissions are now open for Playgroup, Nursery, Junior KG and Senior
-            KG.
+            Give your child the best start in life at Birla Open Minds Preschool
+            And Day Care. Admissions are now open for Playgroup, Nursery, Junior
+            KG and Senior KG.
           </p>
 
           {/* Benefits Grid */}
@@ -52,7 +52,12 @@ export function Admissions() {
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <button className="px-8 py-4 bg-white text-purple-600 rounded-full hover:shadow-2xl transition-all transform hover:scale-105 font-bold text-lg flex items-center gap-2 group">
+            <button
+              onClick={() =>
+                window.open("/apply-admission", "_blank", "noopener,noreferrer")
+              }
+              className="px-8 py-4 bg-white text-purple-600 rounded-full hover:shadow-2xl transition-all transform hover:scale-105 font-bold text-lg flex items-center gap-2 group"
+            >
               Apply for Admission
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </button>

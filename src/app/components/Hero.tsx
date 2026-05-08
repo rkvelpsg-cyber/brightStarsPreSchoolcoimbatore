@@ -26,7 +26,7 @@ export function Hero() {
             Nurturing Young Minds with Love and Care
           </h1>
           <p className="text-lg md:text-xl text-white/95 mb-10 max-w-3xl mx-auto leading-relaxed">
-            Bright Stars Play School in Coimbatore provides a joyful, safe, and
+            Birla Open Minds Preschool And Day Care provides a joyful, safe, and
             creative environment where children learn through play, discovery,
             and imagination.
           </p>

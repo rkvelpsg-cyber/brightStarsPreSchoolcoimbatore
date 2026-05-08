@@ -304,4 +304,48 @@
     backdrop-filter: blur(18px);
     -webkit-backdrop-filter: blur(18px);
   }
+
+  .school-brand-title {
+    background-image: linear-gradient(
+      90deg,
+      #2563eb,
+      #06b6d4,
+      #22c55e,
+      #f59e0b,
+      #ec4899,
+      #7c3aed,
+      #2563eb
+    );
+    background-size: 280% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-shadow: 0 1px 1px rgba(255, 255, 255, 0.2);
+    animation:
+      school-rainbow 6s linear infinite,
+      school-pop 2.8s ease-in-out infinite;
+  }
+}
+
+@keyframes school-rainbow {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  100% {
+    background-position: 280% 50%;
+  }
+}
+
+@keyframes school-pop {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+    filter: saturate(1);
+  }
+
+  50% {
+    transform: translateY(-1px) scale(1.03);
+    filter: saturate(1.2);
+  }
 }
