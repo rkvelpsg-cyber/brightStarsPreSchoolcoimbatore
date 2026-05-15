@@ -1,0 +1,287 @@
+/* Premium Carousel Enhancements */
+
+/* Smooth entrance animation */
+@keyframes slideInFromLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-100px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInFromBottom {
+  from {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+@keyframes glow {
+  0%,
+  100% {
+    box-shadow: 0 0 20px rgba(244, 124, 32, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(244, 124, 32, 0.8);
+  }
+}
+
+/* Slick slider customizations */
+.slick-slider {
+  position: relative;
+  display: block;
+  box-sizing: border-box;
+  user-select: none;
+  touch-action: pan-y;
+}
+
+.slick-list {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+}
+
+.slick-track {
+  position: relative;
+  top: 0;
+  left: 0;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.slick-slide {
+  display: none;
+  float: left;
+  height: 100%;
+  min-height: 1px;
+}
+
+.slick-slide img {
+  display: block;
+}
+
+.slick-initialized .slick-slide {
+  display: block;
+}
+
+/* Premium glassmorphism effect */
+.glass-card {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+/* Cinematic vignette effect */
+.carousel-vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 0%,
+    transparent 40%,
+    rgba(0, 0, 0, 0.2) 100%
+  );
+  z-index: 1;
+}
+
+/* Hover effects for buttons */
+.cta-button-primary {
+  position: relative;
+  overflow: hidden;
+}
+
+.cta-button-primary::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition:
+    width 0.6s,
+    height 0.6s;
+}
+
+.cta-button-primary:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+/* Text shadow for better readability */
+.text-with-shadow {
+  text-shadow:
+    2px 2px 4px rgba(0, 0, 0, 0.8),
+    0 0 20px rgba(0, 0, 0, 0.6);
+}
+
+/* Smooth transitions */
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Prevent horizontal scroll */
+body {
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* Mobile optimizations */
+@media (max-width: 640px) {
+  .slick-dots {
+    bottom: 1rem !important;
+  }
+
+  /* Ensure text is readable on small screens */
+  .hero-headline {
+    font-size: clamp(1.75rem, 8vw, 3rem) !important;
+  }
+
+  .hero-subheading {
+    font-size: clamp(1rem, 4vw, 1.25rem) !important;
+  }
+}
+
+/* Tablet optimizations */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .hero-headline {
+    font-size: clamp(2.5rem, 6vw, 4rem) !important;
+  }
+
+  .hero-subheading {
+    font-size: clamp(1.125rem, 3vw, 1.5rem) !important;
+  }
+}
+
+@keyframes headerGradientSweep {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes headerSoftFloat {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+}
+
+.header-brand-fun {
+  background-image: linear-gradient(
+    90deg,
+    #ffffff 0%,
+    #fde047 18%,
+    #fb7185 38%,
+    #38bdf8 58%,
+    #a78bfa 78%,
+    #ffffff 100%
+  );
+  background-size: 240% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.75));
+  animation:
+    headerGradientSweep 5s ease-in-out infinite,
+    headerSoftFloat 4s ease-in-out infinite;
+}
+
+.header-menu-fun {
+  position: relative;
+}
+
+.header-menu-fun::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -6px;
+  height: 3px;
+  width: 0;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #fb7185, #f59e0b, #22d3ee, #a78bfa);
+  background-size: 220% 100%;
+  transition: width 0.32s ease;
+}
+
+.header-menu-fun:hover::after {
+  width: 100%;
+  animation: menuUnderlineShift 1.2s linear infinite;
+}
+
+.header-menu-fun:hover {
+  transform: translateY(-2px) scale(1.05);
+  transition: transform 0.25s ease;
+}
+
+@keyframes menuUnderlineShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 100% 50%;
+  }
+}
+
+.footer-glass {
+  position: relative;
+  background:
+    radial-gradient(
+      circle at top right,
+      rgba(56, 189, 248, 0.2),
+      transparent 40%
+    ),
+    radial-gradient(
+      circle at bottom left,
+      rgba(244, 124, 32, 0.2),
+      transparent 45%
+    ),
+    linear-gradient(145deg, rgba(8, 17, 42, 0.95), rgba(24, 37, 78, 0.92));
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 -12px 40px rgba(8, 17, 42, 0.38);
+}

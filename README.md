@@ -1,7 +1,7 @@
 
-  # Design Creation
+  # Responsive Preschool Homepage Carousel
 
-  This is a code bundle for Design Creation. The original project is available at https://www.figma.com/design/FmymFJgu7RImANyLjxBzvd/Design-Creation.
+  This is a code bundle for Responsive Preschool Homepage Carousel. The original project is available at https://www.figma.com/design/KSYPCNp0Zyv1EFmlNwAlTg/Responsive-Preschool-Homepage-Carousel.
 
   ## Running the code
 

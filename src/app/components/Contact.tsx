@@ -14,9 +14,9 @@ export function Contact() {
           <div className="w-24 h-1 bg-gradient-to-r from-yellow-400 to-orange-400 mx-auto rounded-full mt-4"></div>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
+        <div className="grid max-w-6xl gap-12 mx-auto lg:grid-cols-2">
           {/* Contact Information */}
-          <div className="space-y-6">
+          <div className="flex flex-col gap-6 lg:h-[740px]">
             <div className="glass-card rounded-3xl border-2 border-white/55 p-5 shadow-lg sm:p-8">
               <h3 className="mb-6 text-xl font-bold text-gray-900 sm:text-2xl">
                 Birla Open Minds Preschool And Day Care
@@ -81,7 +81,7 @@ export function Contact() {
             </div>
 
             {/* Call to Action */}
-            <div className="rounded-3xl bg-gradient-to-br from-blue-500 to-purple-500 p-5 text-white shadow-lg sm:p-8">
+            <div className="rounded-3xl bg-gradient-to-br from-blue-500 to-purple-500 p-5 text-white shadow-lg sm:p-8 lg:mt-auto">
               <h3 className="mb-3 text-xl font-bold sm:text-2xl">
                 Schedule a School Visit
               </h3>
@@ -96,9 +96,9 @@ export function Contact() {
           </div>
 
           {/* Map */}
-          <div className="glass-card h-[320px] overflow-hidden rounded-3xl border-2 border-white/55 shadow-lg sm:h-[420px] lg:h-[600px]">
+          <div className="glass-card h-[380px] overflow-hidden rounded-3xl border-2 border-white/55 shadow-lg sm:h-[500px] lg:h-[740px]">
             <iframe
-              src="https://maps.google.com/maps?q=No6%2C%20Annapurneshwari%20layout%20Beside%207%20Hills%20PG%20for%20gents%2C%20Nimbekaipura%2C%20Bengaluru%20East%2C%20Nimbekayipura%2C%20Karnataka%20560049&z=16&output=embed"
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3887.0!2d77.7569549!3d13.055376!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bae0f55dc3c51e7%3A0x74b67c80a30677a1!2sBirla%20Open%20minds%20Preschool%20And%20Daycare!5e0!3m2!1sen!2sin!4v1715500000000!5m2!1sen!2sin"
               width="100%"
               height="100%"
               style={{ border: 0 }}

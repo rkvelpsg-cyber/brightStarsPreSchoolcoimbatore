@@ -1,4 +1,12 @@
-import { Facebook, Instagram, Twitter, Youtube } from "lucide-react";
+import { Facebook, Instagram, Youtube } from "lucide-react";
+
+const INSTAGRAM_URL = "https://www.instagram.com/bompsnimbekaipura/";
+const FACEBOOK_URL = "https://www.facebook.com";
+const YOUTUBE_URL = "https://www.youtube.com";
+const PHONE_NUMBER = "+91-7204039777";
+const EMAIL_ID = "info@birlaopenmindspreschool.com";
+const ADDRESS =
+  "No6, Annapurneshwari layout Beside 7 Hills PG for gents, Nimbekaipura, Bengaluru East, Nimbekayipura, Karnataka 560049";
 
 export function Footer() {
   const quickLinks = [
@@ -37,6 +45,9 @@ export function Footer() {
               Nurturing young minds with love, care, and creativity in Bengaluru
               East, Karnataka.
             </p>
+            <p className="mt-3 text-white/70 text-sm">
+              School Hours: Mon-Fri 8:00 AM - 4:00 PM, Sat 8:00 AM - 12:00 PM
+            </p>
           </div>
 
           {/* Quick Links */}
@@ -71,28 +82,56 @@ export function Footer() {
           <div>
             <h3 className="text-lg font-bold mb-4">Contact Info</h3>
             <ul className="space-y-3 text-white/80">
+              <li>{ADDRESS}</li>
               <li>
-                No6, Annapurneshwari layout Beside 7 Hills PG for gents,
-                Nimbekaipura, Bengaluru East, Nimbekayipura, Karnataka 560049
+                Phone:{" "}
+                <a
+                  className="hover:text-white transition-colors"
+                  href={`tel:${PHONE_NUMBER.replace(/-/g, "")}`}
+                >
+                  {PHONE_NUMBER}
+                </a>
               </li>
-              <li>Phone: +91-7204039777</li>
-              <li>Email: info@birlaopenmindspreschool.com</li>
+              <li>
+                Email:{" "}
+                <a
+                  className="hover:text-white transition-colors"
+                  href={`mailto:${EMAIL_ID}`}
+                >
+                  {EMAIL_ID}
+                </a>
+              </li>
             </ul>
 
             {/* Social Media */}
             <div className="mt-6">
               <h4 className="font-semibold mb-3">Follow Us</h4>
               <div className="flex gap-3">
-                <button className="bg-white/10 hover:bg-white/20 p-2.5 rounded-full transition-all transform hover:scale-110">
+                <button
+                  onClick={() =>
+                    window.open(FACEBOOK_URL, "_blank", "noopener,noreferrer")
+                  }
+                  aria-label="Facebook"
+                  className="bg-white/10 hover:bg-white/20 p-2.5 rounded-full transition-all transform hover:scale-110"
+                >
                   <Facebook className="w-5 h-5" />
                 </button>
-                <button className="bg-white/10 hover:bg-white/20 p-2.5 rounded-full transition-all transform hover:scale-110">
+                <button
+                  onClick={() =>
+                    window.open(INSTAGRAM_URL, "_blank", "noopener,noreferrer")
+                  }
+                  aria-label="Instagram"
+                  className="bg-white/10 hover:bg-white/20 p-2.5 rounded-full transition-all transform hover:scale-110"
+                >
                   <Instagram className="w-5 h-5" />
                 </button>
-                <button className="bg-white/10 hover:bg-white/20 p-2.5 rounded-full transition-all transform hover:scale-110">
-                  <Twitter className="w-5 h-5" />
-                </button>
-                <button className="bg-white/10 hover:bg-white/20 p-2.5 rounded-full transition-all transform hover:scale-110">
+                <button
+                  onClick={() =>
+                    window.open(YOUTUBE_URL, "_blank", "noopener,noreferrer")
+                  }
+                  aria-label="YouTube"
+                  className="bg-white/10 hover:bg-white/20 p-2.5 rounded-full transition-all transform hover:scale-110"
+                >
                   <Youtube className="w-5 h-5" />
                 </button>
               </div>

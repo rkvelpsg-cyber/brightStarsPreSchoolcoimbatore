@@ -1,5 +1,5 @@
 import { Header } from "../components/Header";
-import { Hero } from "../components/Hero";
+import HeroCarousel from "../components/HeroCarousel";
 import { About } from "../components/About";
 import { Programs } from "../components/Programs";
 import { Features } from "../components/Features";
@@ -17,7 +17,7 @@ export function Home() {
     <div className="relative min-h-screen overflow-hidden">
       <FloatingElements />
       <Header />
-      <Hero />
+      <HeroCarousel />
       <About />
       <Programs />
       <Features />

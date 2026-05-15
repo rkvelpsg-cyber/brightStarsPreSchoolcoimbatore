@@ -1,0 +1,56 @@
+/* Premium Carousel Styles */
+.carousel-vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 0%,
+    transparent 40%,
+    rgba(0, 0, 0, 0.2) 100%
+  );
+  z-index: 1;
+}
+
+.text-with-shadow {
+  text-shadow:
+    2px 2px 4px rgba(0, 0, 0, 0.8),
+    0 0 20px rgba(0, 0, 0, 0.6);
+}
+
+.slick-dots li button:before {
+  display: none;
+}
+
+/* Prevent horizontal scroll */
+body {
+  overflow-x: hidden;
+  margin: 0;
+  padding: 0;
+}
+
+/* Mobile optimizations */
+@media (max-width: 640px) {
+  .slick-dots {
+    bottom: 1rem !important;
+  }
+
+  .hero-headline {
+    font-size: clamp(1.75rem, 8vw, 3rem) !important;
+  }
+
+  .hero-subheading {
+    font-size: clamp(1rem, 4vw, 1.25rem) !important;
+  }
+}
+
+/* Tablet optimizations */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .hero-headline {
+    font-size: clamp(2.5rem, 6vw, 4rem) !important;
+  }
+
+  .hero-subheading {
+    font-size: clamp(1.125rem, 3vw, 1.5rem) !important;
+  }
+}
