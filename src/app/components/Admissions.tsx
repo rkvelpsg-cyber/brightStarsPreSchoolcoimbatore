@@ -51,21 +51,24 @@ export function Admissions() {
   return (
     <section
       id="admissions"
-      className="page-section page-section-vivid py-20 relative overflow-hidden"
+      className="page-section page-section-vivid py-20 relative overflow-hidden ring-1 ring-white/20"
     >
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.14),transparent_55%)]" />
       <div className="absolute top-10 left-10 h-32 w-32 rounded-full bg-white/10 blur-3xl" />
       <div className="absolute bottom-10 right-10 h-40 w-40 rounded-full bg-white/10 blur-3xl" />
 
       <div className="container relative z-10 mx-auto px-4 md:px-6">
         <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
           <div>
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-white/20 px-6 py-2 backdrop-blur-sm">
+            <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-white/20 px-6 py-2 backdrop-blur-sm ring-2 ring-yellow-200/60 shadow-[0_0_24px_rgba(255,241,118,0.55)]">
               <Calendar className="h-5 w-5 text-white" />
-              <span className="font-medium text-white">Now Open for 2026</span>
+              <span className="font-medium text-white">
+                Now Open for 2026-27
+              </span>
             </div>
 
             <h2 className="mb-5 text-4xl font-bold text-white md:text-5xl lg:text-6xl">
-              Admissions Open for 2026
+              Admissions Open for 2026-27
             </h2>
 
             <p className="mb-8 max-w-2xl text-lg leading-relaxed text-white/95 md:text-xl">
@@ -89,7 +92,7 @@ export function Admissions() {
             </div>
           </div>
 
-          <div className="rounded-[28px] border border-white/35 bg-white/15 p-6 shadow-2xl backdrop-blur-xl md:p-7">
+          <div className="rounded-[28px] border border-yellow-100/50 bg-white/15 p-6 shadow-[0_20px_70px_rgba(255,171,64,0.45)] backdrop-blur-xl md:p-7">
             <h3 className="text-2xl font-bold text-white md:text-3xl">
               Admission Enquiry Form
             </h3>
@@ -134,7 +137,6 @@ export function Admissions() {
                   <option>Nursery</option>
                   <option>Junior KG</option>
                   <option>Senior KG</option>
-                  <option>Day Care</option>
                 </select>
               </div>
 

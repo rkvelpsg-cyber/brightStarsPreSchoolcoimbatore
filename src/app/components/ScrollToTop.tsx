@@ -6,14 +6,11 @@ export function ScrollToTop() {
 
   useEffect(() => {
     const toggleVisibility = () => {
-      if (window.pageYOffset > 300) {
-        setIsVisible(true);
-      } else {
-        setIsVisible(false);
-      }
+      setIsVisible(window.scrollY > 120);
     };
 
-    window.addEventListener("scroll", toggleVisibility);
+    toggleVisibility();
+    window.addEventListener("scroll", toggleVisibility, { passive: true });
     return () => window.removeEventListener("scroll", toggleVisibility);
   }, []);
 
@@ -24,15 +21,20 @@ export function ScrollToTop() {
     });
   };
 
-  if (!isVisible) {
-    return null;
-  }
-
   return (
     <button
       onClick={scrollToTop}
-      className="fixed bottom-5 right-5 z-50 rounded-full bg-gradient-to-r from-pink-500 to-purple-500 p-3 text-white shadow-2xl transition-all transform hover:scale-110 sm:bottom-8 sm:right-8 sm:p-4 animate-bounce"
+      className={`fixed z-[130] rounded-full bg-gradient-to-r from-pink-500 to-purple-500 p-3 text-white shadow-2xl ring-2 ring-white/70 transition-all duration-300 hover:scale-110 sm:p-4 ${
+        isVisible
+          ? "opacity-100 translate-y-0 pointer-events-auto"
+          : "opacity-0 translate-y-5 pointer-events-none"
+      }`}
+      style={{
+        right: "calc(1rem + env(safe-area-inset-right))",
+        bottom: "calc(1rem + env(safe-area-inset-bottom))",
+      }}
       aria-label="Scroll to top"
+      title="Back to top"
     >
       <ArrowUp className="h-5 w-5 sm:h-6 sm:w-6" />
     </button>

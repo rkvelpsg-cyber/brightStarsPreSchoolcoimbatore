@@ -3,8 +3,8 @@ import { Baby, Smile, BookOpen, GraduationCap } from "lucide-react";
 export function Programs() {
   const programs = [
     {
-      title: "Playgroup",
-      age: "Age 1.5 – 2.5 years",
+      title: "Playgroup (LY-1)",
+      age: "Age 2 - 3 years",
       description:
         "A fun introduction to learning through play, music, stories, and social interaction.",
       icon: Baby,
@@ -14,8 +14,8 @@ export function Programs() {
       iconColor: "text-pink-500",
     },
     {
-      title: "Nursery",
-      age: "Age 2.5 – 3.5 years",
+      title: "Nursery (LY-2)",
+      age: "Age 3 - 4 years",
       description:
         "Children begin learning basic concepts, colors, shapes, and communication skills.",
       icon: Smile,
@@ -25,8 +25,8 @@ export function Programs() {
       iconColor: "text-blue-500",
     },
     {
-      title: "Junior KG",
-      age: "Age 3.5 – 4.5 years",
+      title: "Junior KG (K-1)",
+      age: "Age 4 - 5 years",
       description:
         "Focus on creativity, storytelling, early writing, and problem solving.",
       icon: BookOpen,
@@ -36,8 +36,8 @@ export function Programs() {
       iconColor: "text-green-500",
     },
     {
-      title: "Senior KG",
-      age: "Age 4.5 – 5.5 years",
+      title: "Senior KG (K-2)",
+      age: "Age 5 - 6 years",
       description:
         "Preparation for primary school with language, numbers, and confidence building activities.",
       icon: GraduationCap,
@@ -52,10 +52,10 @@ export function Programs() {
     <section id="programs" className="page-section page-section-neutral py-20">
       <div className="container mx-auto px-4 md:px-6">
         <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
+          <h2 className="px-2 text-4xl md:text-5xl font-bold leading-tight mb-4 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
             Our Programs
           </h2>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+          <p className="px-2 text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
             Age-appropriate learning programs designed for every stage of early
             childhood
           </p>

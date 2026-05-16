@@ -73,10 +73,10 @@ export function Features() {
     <section className="page-section page-section-lilac py-20">
       <div className="container mx-auto px-4 md:px-6">
         <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
+          <h2 className="px-2 text-4xl md:text-5xl font-bold leading-tight mb-4 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
             Why Choose Birla Open Minds
           </h2>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+          <p className="px-2 text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
             Features that make us the perfect choice for your child's early
             education
           </p>

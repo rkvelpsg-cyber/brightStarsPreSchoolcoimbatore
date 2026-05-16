@@ -1,33 +1,45 @@
 import { createBrowserRouter } from "react-router";
-import { Home } from "./pages/Home";
-import { ApplyAdmission } from "./pages/ApplyAdmission";
-import { Login } from "./pages/Login";
-import { ParentDashboard } from "./pages/ParentDashboard";
-import { AdminDashboard } from "./pages/AdminDashboard";
-
 export const router = createBrowserRouter([
   {
     path: "/",
-    Component: Home,
+    lazy: async () => {
+      const module = await import("./pages/Home");
+      return { Component: module.Home };
+    },
   },
   {
     path: "/apply-admission",
-    Component: ApplyAdmission,
+    lazy: async () => {
+      const module = await import("./pages/ApplyAdmission");
+      return { Component: module.ApplyAdmission };
+    },
   },
   {
     path: "/login",
-    Component: Login,
+    lazy: async () => {
+      const module = await import("./pages/Login");
+      return { Component: module.Login };
+    },
   },
   {
     path: "/dashboard/parent",
-    Component: ParentDashboard,
+    lazy: async () => {
+      const module = await import("./pages/ParentDashboard");
+      return { Component: module.ParentDashboard };
+    },
   },
   {
     path: "/dashboard/admin",
-    Component: AdminDashboard,
+    lazy: async () => {
+      const module = await import("./pages/AdminDashboard");
+      return { Component: module.AdminDashboard };
+    },
   },
   {
     path: "*",
-    Component: Home,
+    lazy: async () => {
+      const module = await import("./pages/Home");
+      return { Component: module.Home };
+    },
   },
 ]);

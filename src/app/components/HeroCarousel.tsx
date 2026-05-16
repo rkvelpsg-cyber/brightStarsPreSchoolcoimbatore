@@ -268,6 +268,44 @@ export default function HeroCarousel() {
   const [showSwipeHint, setShowSwipeHint] = useState(true);
   const sliderRef = useRef<Slider>(null);
 
+  const handleCarouselCta = (buttonText: string) => {
+    const lowerText = buttonText.toLowerCase();
+    const WHATSAPP_NUMBER = "917204039777";
+
+    if (
+      lowerText.includes("admission") ||
+      lowerText.includes("book") ||
+      lowerText.includes("apply")
+    ) {
+      const admissionsSection = document.querySelector("#admissions");
+      if (admissionsSection) {
+        admissionsSection.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }
+    } else if (lowerText.includes("counselor") || lowerText.includes("call")) {
+      window.open(
+        `https://wa.me/${WHATSAPP_NUMBER}?text=Hello%20Birla%20Open%20Minds%20Preschool%20And%20Day%20Care%2C%20I%20would%20like%20to%20inquire%20about%20admissions.`,
+        "_blank",
+        "noopener,noreferrer",
+      );
+    } else if (
+      lowerText.includes("explore") ||
+      lowerText.includes("facilities") ||
+      lowerText.includes("visit") ||
+      lowerText.includes("campus")
+    ) {
+      const facilitiesSection = document.querySelector("#facilities");
+      if (facilitiesSection) {
+        facilitiesSection.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }
+    }
+  };
+
   // Hide swipe hint after 4 seconds
   useEffect(() => {
     const timer = setTimeout(() => setShowSwipeHint(false), 4000);
@@ -374,6 +412,8 @@ export default function HeroCarousel() {
                 alt={slide.headline}
                 className="w-full h-full object-cover"
                 loading={index === 0 ? "eager" : "lazy"}
+                fetchPriority={index === 0 ? "high" : "auto"}
+                decoding="async"
               />
             </motion.div>
 
@@ -555,7 +595,11 @@ export default function HeroCarousel() {
                       className="flex flex-col sm:flex-row gap-4"
                     >
                       {slide.buttons.map((button, i) => (
-                        <PremiumButton key={i} variant={button.variant}>
+                        <PremiumButton
+                          key={i}
+                          variant={button.variant}
+                          onClick={() => handleCarouselCta(button.text)}
+                        >
                           {button.text}
                         </PremiumButton>
                       ))}

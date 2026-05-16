@@ -1,14 +1,8 @@
-import {
-  Facebook,
-  Instagram,
-  Menu,
-  MessageCircle,
-  X,
-  Youtube,
-} from "lucide-react";
+import { Instagram, Menu, MessageCircle, X, Youtube } from "lucide-react";
 import { useState, useEffect } from "react";
 
 const INSTAGRAM_URL = "https://www.instagram.com/bompsnimbekaipura/";
+const YOUTUBE_URL = "https://www.youtube.com/@Birlaopenmindsdaycarepreschool";
 
 export function Header() {
   const [isHeroVisible, setIsHeroVisible] = useState(true);
@@ -119,19 +113,6 @@ export function Header() {
             {/* Social Media Icons */}
             <div className="flex items-center gap-1 mr-1">
               <button
-                className="p-1.5 rounded-full text-blue-600 hover:bg-blue-50 transition-colors"
-                aria-label="Facebook"
-                onClick={() =>
-                  window.open(
-                    "https://www.facebook.com",
-                    "_blank",
-                    "noopener,noreferrer",
-                  )
-                }
-              >
-                <Facebook className="w-4 h-4" />
-              </button>
-              <button
                 className="p-1.5 rounded-full text-pink-500 hover:bg-pink-50 transition-colors"
                 aria-label="Instagram"
                 onClick={() =>
@@ -144,11 +125,7 @@ export function Header() {
                 className="p-1.5 rounded-full text-red-600 hover:bg-red-50 transition-colors"
                 aria-label="YouTube"
                 onClick={() =>
-                  window.open(
-                    "https://www.youtube.com",
-                    "_blank",
-                    "noopener,noreferrer",
-                  )
+                  window.open(YOUTUBE_URL, "_blank", "noopener,noreferrer")
                 }
               >
                 <Youtube className="w-4 h-4" />
@@ -182,19 +159,6 @@ export function Header() {
           {/* Mobile Social Icons + Menu Button */}
           <div className="lg:hidden flex items-center gap-1">
             <button
-              className="p-1.5 rounded-full text-blue-600 hover:bg-blue-50 transition-colors"
-              aria-label="Facebook"
-              onClick={() =>
-                window.open(
-                  "https://www.facebook.com",
-                  "_blank",
-                  "noopener,noreferrer",
-                )
-              }
-            >
-              <Facebook className="w-4 h-4" />
-            </button>
-            <button
               className="p-1.5 rounded-full text-pink-500 hover:bg-pink-50 transition-colors"
               aria-label="Instagram"
               onClick={() =>
@@ -207,11 +171,7 @@ export function Header() {
               className="p-1.5 rounded-full text-red-600 hover:bg-red-50 transition-colors"
               aria-label="YouTube"
               onClick={() =>
-                window.open(
-                  "https://www.youtube.com",
-                  "_blank",
-                  "noopener,noreferrer",
-                )
+                window.open(YOUTUBE_URL, "_blank", "noopener,noreferrer")
               }
             >
               <Youtube className="w-4 h-4" />
