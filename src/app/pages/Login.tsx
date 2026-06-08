@@ -1064,7 +1064,7 @@ function LoginPage({
                   : "bg-transparent text-slate-700 shadow-none hover:bg-transparent hover:text-slate-700"
               }`}
               onClick={() => setSelectedRole("admin")}
-              disabled={loading || !!defaultRole}
+              disabled={loading}
             >
               Admin Login
             </Button>
@@ -1077,7 +1077,7 @@ function LoginPage({
                   : "bg-transparent text-slate-700 shadow-none hover:bg-transparent hover:text-slate-700"
               }`}
               onClick={() => setSelectedRole("parent")}
-              disabled={loading || !!defaultRole}
+              disabled={loading}
             >
               Parent Login
             </Button>
