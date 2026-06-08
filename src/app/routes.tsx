@@ -22,6 +22,20 @@ export const router = createBrowserRouter([
     },
   },
   {
+    path: "/login/admin",
+    lazy: async () => {
+      const module = await import("./pages/Login");
+      return { Component: module.Login };
+    },
+  },
+  {
+    path: "/login/parent",
+    lazy: async () => {
+      const module = await import("./pages/Login");
+      return { Component: module.Login };
+    },
+  },
+  {
     path: "/dashboard/parent",
     lazy: async () => {
       const module = await import("./pages/ParentDashboard");

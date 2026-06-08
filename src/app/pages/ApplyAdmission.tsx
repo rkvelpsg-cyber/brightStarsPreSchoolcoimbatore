@@ -5,6 +5,10 @@ import { Footer } from "../components/Footer";
 import { FloatingElements } from "../components/FloatingElements";
 import { ScrollToTop } from "../components/ScrollToTop";
 import { Link } from "react-router";
+import {
+  ADMISSION_FORM_DRAFT_STORAGE_KEY,
+  appendAdmissionEnquiry,
+} from "../lib/admissionEnquiries";
 
 type AdmissionFormState = {
   parentName: string;
@@ -22,7 +26,7 @@ type AdmissionFormState = {
   notes: string;
 };
 
-const STORAGE_KEY = "birla-open-minds-admission-form";
+const STORAGE_KEY = ADMISSION_FORM_DRAFT_STORAGE_KEY;
 
 const initialForm: AdmissionFormState = {
   parentName: "",
@@ -43,6 +47,7 @@ const initialForm: AdmissionFormState = {
 export function ApplyAdmission() {
   const [form, setForm] = useState<AdmissionFormState>(initialForm);
   const [savedAt, setSavedAt] = useState<string | null>(null);
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
 
   useEffect(() => {
     const saved = window.localStorage.getItem(STORAGE_KEY);
@@ -90,8 +95,25 @@ export function ApplyAdmission() {
       JSON.stringify({ values: form, savedAt: timestamp }),
     );
 
+    appendAdmissionEnquiry(form);
+
     setSavedAt(timestamp);
+    setShowSuccessPopup(true);
   };
+
+  useEffect(() => {
+    if (!showSuccessPopup) {
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setShowSuccessPopup(false);
+    }, 2500);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [showSuccessPopup]);
 
   return (
     <div className="relative min-h-screen overflow-hidden">
@@ -297,6 +319,32 @@ export function ApplyAdmission() {
 
       <Footer />
       <ScrollToTop />
+
+      {showSuccessPopup && (
+        <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/35 px-4">
+          <div className="w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl">
+            <div className="mb-3 flex items-center gap-2 text-emerald-600">
+              <CheckCircle2 className="h-5 w-5" />
+              <p className="text-lg font-semibold text-slate-900">
+                Admission details saved
+              </p>
+            </div>
+            <p className="text-sm text-slate-600">
+              Your Admission Enquiry Form was saved successfully and shared with
+              the Admin under Registrations.
+            </p>
+            <div className="mt-5 flex justify-end">
+              <button
+                type="button"
+                onClick={() => setShowSuccessPopup(false)}
+                className="rounded-full bg-slate-900 px-5 py-2 text-sm font-medium text-white transition hover:bg-slate-700"
+              >
+                OK
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

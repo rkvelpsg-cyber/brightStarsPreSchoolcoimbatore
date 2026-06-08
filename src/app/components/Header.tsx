@@ -1,8 +1,16 @@
-import { Instagram, Menu, MessageCircle, X, Youtube } from "lucide-react";
+import {
+  Facebook,
+  Instagram,
+  Menu,
+  MessageCircle,
+  X,
+  Youtube,
+} from "lucide-react";
 import { useState, useEffect } from "react";
 
 const INSTAGRAM_URL = "https://www.instagram.com/bompsnimbekaipura/";
 const YOUTUBE_URL = "https://www.youtube.com/@Birlaopenmindsdaycarepreschool";
+const FACEBOOK_URL = "https://www.facebook.com/";
 
 export function Header() {
   const [isHeroVisible, setIsHeroVisible] = useState(true);
@@ -56,8 +64,13 @@ export function Header() {
     setIsMobileMenuOpen(false);
   };
 
-  const openLoginPage = () => {
-    window.open("/login", "_blank", "noopener,noreferrer");
+  const openAdminLoginPage = () => {
+    window.open("/login/admin", "_blank", "noopener,noreferrer");
+    setIsMobileMenuOpen(false);
+  };
+
+  const openParentLoginPage = () => {
+    window.open("/login/parent", "_blank", "noopener,noreferrer");
     setIsMobileMenuOpen(false);
   };
 
@@ -113,6 +126,15 @@ export function Header() {
             {/* Social Media Icons */}
             <div className="flex items-center gap-1 mr-1">
               <button
+                className="p-1.5 rounded-full text-blue-600 hover:bg-blue-50 transition-colors"
+                aria-label="Facebook"
+                onClick={() =>
+                  window.open(FACEBOOK_URL, "_blank", "noopener,noreferrer")
+                }
+              >
+                <Facebook className="w-4 h-4" />
+              </button>
+              <button
                 className="p-1.5 rounded-full text-pink-500 hover:bg-pink-50 transition-colors"
                 aria-label="Instagram"
                 onClick={() =>
@@ -141,10 +163,17 @@ export function Header() {
             </button>
 
             <button
-              onClick={openLoginPage}
-              className="rounded-full bg-gradient-to-r from-blue-500 to-cyan-500 px-4 py-2 text-xs font-semibold text-white shadow-md transition hover:brightness-110 hover:shadow-lg xl:px-5 xl:text-sm"
+              onClick={openAdminLoginPage}
+              className="rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 px-3 py-2 text-xs font-semibold text-white shadow-md transition hover:brightness-110 hover:shadow-lg xl:px-4 xl:text-sm"
             >
-              Login
+              Admin Login
+            </button>
+
+            <button
+              onClick={openParentLoginPage}
+              className="rounded-full bg-gradient-to-r from-cyan-500 to-teal-500 px-3 py-2 text-xs font-semibold text-white shadow-md transition hover:brightness-110 hover:shadow-lg xl:px-4 xl:text-sm"
+            >
+              Parent Login
             </button>
 
             {/* Enroll Now Button */}
@@ -158,6 +187,15 @@ export function Header() {
 
           {/* Mobile Social Icons + Menu Button */}
           <div className="lg:hidden flex items-center gap-1">
+            <button
+              className="p-1.5 rounded-full text-blue-600 hover:bg-blue-50 transition-colors"
+              aria-label="Facebook"
+              onClick={() =>
+                window.open(FACEBOOK_URL, "_blank", "noopener,noreferrer")
+              }
+            >
+              <Facebook className="w-4 h-4" />
+            </button>
             <button
               className="p-1.5 rounded-full text-pink-500 hover:bg-pink-50 transition-colors"
               aria-label="Instagram"
@@ -210,10 +248,16 @@ export function Header() {
                 WhatsApp Us
               </button>
               <button
-                onClick={openLoginPage}
-                className="mt-2 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500 px-6 py-2.5 font-medium text-white shadow-md transition hover:brightness-110"
+                onClick={openAdminLoginPage}
+                className="mt-2 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-2.5 font-medium text-white shadow-md transition hover:brightness-110"
               >
-                Login
+                Admin Login
+              </button>
+              <button
+                onClick={openParentLoginPage}
+                className="mt-2 rounded-full bg-gradient-to-r from-cyan-500 to-teal-500 px-6 py-2.5 font-medium text-white shadow-md transition hover:brightness-110"
+              >
+                Parent Login
               </button>
               <button
                 onClick={openAdmissionsPage}

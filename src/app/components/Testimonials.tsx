@@ -1,23 +1,17 @@
-import { Quote, Star } from "lucide-react";
+import { PlayCircle } from "lucide-react";
 
 export function Testimonials() {
-  const testimonials = [
+  const videoTestimonials = [
     {
-      text: "Birla Open Minds Preschool And Day Care has been wonderful for our child. The teachers are caring and the learning environment is joyful.",
-      author: "Parent, Bengaluru East",
-      rating: 5,
+      src: "/Parent_Birla_1.mp4",
+      title: "Parent Testimonial 1",
+      subtitle: "Real feedback from our school community",
       color: "from-pink-400 to-rose-400",
     },
     {
-      text: "My daughter loves going to school every day. The activities are fun and educational.",
-      author: "Parent",
-      rating: 5,
-      color: "from-blue-400 to-cyan-400",
-    },
-    {
-      text: "One of the best preschools in Bengaluru East! Our son has grown so much in confidence and creativity. Highly recommend!",
-      author: "Parent, Bengaluru East",
-      rating: 5,
+      src: "/Parent_2_Birla.mp4",
+      title: "Parent Testimonial 2",
+      subtitle: "Parents sharing their experience",
       color: "from-purple-400 to-indigo-400",
     },
   ];
@@ -35,44 +29,34 @@ export function Testimonials() {
           <div className="w-24 h-1 bg-gradient-to-r from-yellow-400 to-orange-400 mx-auto rounded-full mt-4"></div>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-8 max-w-7xl mx-auto">
-          {testimonials.map((testimonial, index) => (
+        <div className="grid gap-8 md:grid-cols-2 max-w-5xl mx-auto">
+          {videoTestimonials.map((testimonial, index) => (
             <div
               key={index}
-              className="glass-card rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border-2 border-white/55 relative"
+              className="glass-card rounded-3xl p-4 md:p-5 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border-2 border-white/55 relative"
             >
-              {/* Quote Icon */}
               <div
                 className={`absolute -top-4 left-8 bg-gradient-to-r ${testimonial.color} rounded-full p-3 shadow-lg`}
               >
-                <Quote className="w-6 h-6 text-white" />
+                <PlayCircle className="w-6 h-6 text-white" />
               </div>
 
-              {/* Stars */}
-              <div className="flex gap-1 mb-4 mt-4">
-                {[...Array(testimonial.rating)].map((_, i) => (
-                  <Star
-                    key={i}
-                    className="w-5 h-5 fill-yellow-400 text-yellow-400"
-                  />
-                ))}
+              <div className="mt-4 overflow-hidden rounded-2xl border border-white/60 bg-black/90">
+                <video
+                  src={testimonial.src}
+                  controls
+                  preload="metadata"
+                  className="h-[320px] w-full object-contain md:h-[360px]"
+                />
               </div>
 
-              {/* Testimonial Text */}
-              <p className="text-gray-700 text-lg leading-relaxed mb-6 italic">
-                "{testimonial.text}"
-              </p>
-
-              {/* Author */}
-              <div
-                className={`pt-4 border-t-2 border-gradient-to-r ${testimonial.color}`}
-              >
-                <p className="font-semibold text-gray-900">
-                  — {testimonial.author}
+              <div className="pt-4 px-1">
+                <p className="font-semibold text-gray-900 text-lg">
+                  {testimonial.title}
                 </p>
+                <p className="text-gray-600 mt-1">{testimonial.subtitle}</p>
               </div>
 
-              {/* Decorative element */}
               <div
                 className={`absolute bottom-4 right-4 w-16 h-16 bg-gradient-to-r ${testimonial.color} opacity-10 rounded-full`}
               ></div>

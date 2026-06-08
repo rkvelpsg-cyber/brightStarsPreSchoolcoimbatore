@@ -15,7 +15,7 @@ import "slick-carousel/slick/slick-theme.css";
 
 // Import images
 import admissionImage from "../../imports/Poster6.jpeg";
-import smartClassroom from "../../imports/Image_1.jpeg";
+import smartClassroom from "../../imports/Image_5.jpeg";
 import indoorPlay from "../../imports/Image_2.jpeg";
 import ballPool from "../../imports/Image_3.jpeg";
 import toddlerActivity from "../../imports/Image_4.jpeg";
@@ -133,6 +133,28 @@ const slides: SlideData[] = [
       { text: "Talk to Counselor", variant: "secondary" },
     ],
     features: ["Limited Period Offer", "Admissions Open Now"],
+  },
+  {
+    id: 7,
+    image: "/School_Promo_2.jpeg",
+    headline: "A Bright and Caring Preschool Campus",
+    subheading:
+      "Discover a safe, joyful environment where children learn, explore, and grow every day.",
+    buttons: [
+      { text: "Explore Facilities", variant: "primary" },
+      { text: "Book a School Tour", variant: "secondary" },
+    ],
+  },
+  {
+    id: 8,
+    image: "/School_Promo_3.jpeg",
+    headline: "Where Learning Feels Like Home",
+    subheading:
+      "Thoughtfully designed spaces, loving educators, and engaging activities for early childhood development.",
+    buttons: [
+      { text: "Visit Campus", variant: "primary" },
+      { text: "Apply Now", variant: "secondary" },
+    ],
   },
 ];
 
@@ -267,6 +289,10 @@ export default function HeroCarousel() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [showSwipeHint, setShowSwipeHint] = useState(true);
   const sliderRef = useRef<Slider>(null);
+
+  const openRoleLogin = (role: "admin" | "parent") => {
+    window.open(`/login/${role}`, "_blank", "noopener,noreferrer");
+  };
 
   const handleCarouselCta = (buttonText: string) => {
     const lowerText = buttonText.toLowerCase();
@@ -592,17 +618,35 @@ export default function HeroCarousel() {
                           : { opacity: 0, y: 20 }
                       }
                       transition={{ duration: 0.8, delay: 0.7 }}
-                      className="flex flex-col sm:flex-row gap-4"
+                      className="flex flex-col gap-4"
                     >
-                      {slide.buttons.map((button, i) => (
+                      <div className="flex flex-col sm:flex-row gap-4">
+                        {slide.buttons.map((button, i) => (
+                          <PremiumButton
+                            key={i}
+                            variant={button.variant}
+                            onClick={() => handleCarouselCta(button.text)}
+                          >
+                            {button.text}
+                          </PremiumButton>
+                        ))}
+                      </div>
+                      <div className="flex flex-col sm:flex-row gap-3">
                         <PremiumButton
-                          key={i}
-                          variant={button.variant}
-                          onClick={() => handleCarouselCta(button.text)}
+                          variant="secondary"
+                          onClick={() => openRoleLogin("admin")}
+                          className="border-blue-200/70 bg-blue-600/35 hover:bg-blue-600"
                         >
-                          {button.text}
+                          Admin Login
                         </PremiumButton>
-                      ))}
+                        <PremiumButton
+                          variant="secondary"
+                          onClick={() => openRoleLogin("parent")}
+                          className="border-cyan-200/70 bg-cyan-600/35 hover:bg-cyan-600"
+                        >
+                          Parent Login
+                        </PremiumButton>
+                      </div>
                     </motion.div>
                   )}
                 </motion.div>

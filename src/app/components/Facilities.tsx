@@ -4,44 +4,38 @@ import { Palette, Home, Blocks, BookOpen, Music, Camera } from "lucide-react";
 export function Facilities() {
   const facilities = [
     {
-      title: "Colorful Classrooms",
-      image:
-        "https://images.unsplash.com/photo-1601339434203-130259102db6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxraW5kZXJnYXJ0ZW4lMjBjbGFzc3Jvb20lMjBjb2xvcmZ1bHxlbnwxfHx8fDE3NzMxOTM5Mzd8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      title: "Lift Facility",
+      image: "/Lift_Facility.jpeg",
       icon: Palette,
       color: "from-pink-400 to-rose-400",
     },
     {
-      title: "Safe Play Area",
-      image:
-        "https://images.unsplash.com/photo-1633762348290-33a37f4d7fcf?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwcmVzY2hvb2wlMjBwbGF5Z3JvdW5kJTIwb3V0ZG9vcnxlbnwxfHx8fDE3NzMyMTMyOTF8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      title: "Classroom Activity Zone",
+      image: "/Image%203.jpeg",
       icon: Home,
       color: "from-blue-400 to-cyan-400",
     },
     {
-      title: "Learning Toys and Activity Zone",
-      image:
-        "https://images.unsplash.com/photo-1509676942850-ca79d4741746?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjaGlsZHJlbiUyMHBsYXlpbmclMjB0b3lzfGVufDF8fHx8MTc3MzEzNjQ0M3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      title: "Play and Learning Space",
+      image: "/Image%205.jpeg",
       icon: Blocks,
       color: "from-green-400 to-emerald-400",
     },
     {
-      title: "Story and Reading Corner",
-      image:
-        "https://images.unsplash.com/photo-1549737221-bef65e2604a6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxraWRzJTIwcmVhZGluZyUyMGJvb2tzfGVufDF8fHx8MTc3MzIxMzI5MHww&ixlib=rb-4.1.0&q=80&w=1080",
+      title: "Student Activity Moments",
+      image: "/Photo_5.jpeg",
       icon: BookOpen,
       color: "from-purple-400 to-indigo-400",
     },
     {
-      title: "Music and Dance Room",
-      image:
-        "https://images.unsplash.com/photo-1605627079912-97c3810a11a4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjaGlsZHJlbiUyMGFydHMlMjBjcmFmdHN8ZW58MXx8fHwxNzczMjEzMjkxfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      title: "CCTV Security Monitoring",
+      image: "/CCTV.jpeg",
       icon: Music,
       color: "from-yellow-400 to-orange-400",
     },
     {
-      title: "CCTV Security",
-      image:
-        "https://images.unsplash.com/photo-1761208663763-c4d30657c910?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwcmVzY2hvb2wlMjBjaGlsZHJlbiUyMGNsYXNzcm9vbXxlbnwxfHx8fDE3NzMyMTMyODh8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      title: "School Van Transport",
+      image: "/Van.jpeg",
       icon: Camera,
       color: "from-red-400 to-pink-400",
     },

@@ -1,7 +1,8 @@
-import { Instagram, Youtube } from "lucide-react";
+import { Facebook, Instagram, Youtube } from "lucide-react";
 
 const INSTAGRAM_URL = "https://www.instagram.com/bompsnimbekaipura/";
 const YOUTUBE_URL = "https://www.youtube.com/@Birlaopenmindsdaycarepreschool";
+const FACEBOOK_URL = "https://www.facebook.com/";
 const PHONE_NUMBER = "+91-7204039777";
 const EMAIL_ID = "info@birlaopenmindspreschool.com";
 const ADDRESS =
@@ -104,6 +105,15 @@ export function Footer() {
               <div className="mt-6">
                 <h4 className="font-semibold mb-3">Follow Us</h4>
                 <div className="flex gap-3">
+                  <button
+                    onClick={() =>
+                      window.open(FACEBOOK_URL, "_blank", "noopener,noreferrer")
+                    }
+                    aria-label="Facebook"
+                    className="bg-white/10 hover:bg-white/20 p-2.5 rounded-full transition-all transform hover:scale-110"
+                  >
+                    <Facebook className="w-5 h-5" />
+                  </button>
                   <button
                     onClick={() =>
                       window.open(

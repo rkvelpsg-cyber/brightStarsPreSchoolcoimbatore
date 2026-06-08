@@ -3,36 +3,52 @@ import { ImageWithFallback } from "./figma/ImageWithFallback";
 export function Gallery() {
   const images = [
     {
-      src: "https://images.unsplash.com/photo-1509676942850-ca79d4741746?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjaGlsZHJlbiUyMHBsYXlpbmclMjB0b3lzfGVufDF8fHx8MTc3MzEzNjQ0M3ww&ixlib=rb-4.1.0&q=80&w=1080",
-      alt: "Children playing",
+      src: "/Child.jpg",
+      alt: "Children at school activity",
     },
     {
-      src: "https://images.unsplash.com/photo-1696527014256-4755b3ac0b4a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxraWRzJTIwZHJhd2luZyUyMGNvbG9yZnVsfGVufDF8fHx8MTc3MzExNDYyNnww&ixlib=rb-4.1.0&q=80&w=1080",
-      alt: "Kids drawing",
+      src: "/Image%202.jpeg",
+      alt: "Classroom moments",
     },
     {
-      src: "https://images.unsplash.com/photo-1761208663763-c4d30657c910?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwcmVzY2hvb2wlMjBjaGlsZHJlbiUyMGNsYXNzcm9vbXxlbnwxfHx8fDE3NzMyMTMyODh8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      alt: "Classroom activities",
+      src: "/Image%203.jpeg",
+      alt: "Play-based learning session",
     },
     {
-      src: "https://images.unsplash.com/photo-1601339434203-130259102db6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxraW5kZXJnYXJ0ZW4lMjBjbGFzc3Jvb20lMjBjb2xvcmZ1bHxlbnwxfHx8fDE3NzMxOTM5Mzd8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      alt: "Preschool games",
+      src: "/Image%204.jpeg",
+      alt: "Creative classroom fun",
     },
     {
-      src: "https://images.unsplash.com/photo-1544776193-352d25ca82cd?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx0ZWFjaGVyJTIwY2hpbGRyZW4lMjBsZWFybmluZ3xlbnwxfHx8fDE3NzMyMTMyODl8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      alt: "Teachers interacting with kids",
+      src: "/Image%205.jpeg",
+      alt: "Teacher-guided activity",
     },
     {
-      src: "https://images.unsplash.com/photo-1549737221-bef65e2604a6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxraWRzJTIwcmVhZGluZyUyMGJvb2tzfGVufDF8fHx8MTc3MzIxMzI5MHww&ixlib=rb-4.1.0&q=80&w=1080",
-      alt: "Kids reading books",
+      src: "/Photo_4.jpeg",
+      alt: "Fun learning highlights",
     },
     {
-      src: "https://images.unsplash.com/photo-1605627079912-97c3810a11a4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjaGlsZHJlbiUyMGFydHMlMjBjcmFmdHN8ZW58MXx8fHwxNzczMjEzMjkxfDA&ixlib=rb-4.1.0&q=80&w=1080",
-      alt: "Arts and crafts",
+      src: "/Photo_5.jpeg",
+      alt: "Kids activity day",
     },
     {
-      src: "https://images.unsplash.com/photo-1633762348290-33a37f4d7fcf?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwcmVzY2hvb2wlMjBwbGF5Z3JvdW5kJTIwb3V0ZG9vcnxlbnwxfHx8fDE3NzMyMTMyOTF8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      alt: "Outdoor playground",
+      src: "/School_Promo_2.jpeg",
+      alt: "School event snapshot",
+    },
+    {
+      src: "/School_Promo_3.jpeg",
+      alt: "Preschool celebration",
+    },
+    {
+      src: "/Happy_Parents.jpeg",
+      alt: "Happy parents and children",
+    },
+    {
+      src: "/Lift_Facility.jpeg",
+      alt: "Lift facility and campus access",
+    },
+    {
+      src: "/CCTV.jpeg",
+      alt: "CCTV enabled secure campus",
     },
   ];
 
@@ -64,7 +80,7 @@ export function Gallery() {
           {images.map((image, index) => (
             <div
               key={index}
-              className={`group relative rounded-3xl overflow-hidden border-4 ${borderColors[index]} shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 hover:scale-105`}
+              className={`group relative rounded-3xl overflow-hidden border-4 ${borderColors[index % borderColors.length]} shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 hover:scale-105`}
             >
               <div className="aspect-square overflow-hidden">
                 <ImageWithFallback

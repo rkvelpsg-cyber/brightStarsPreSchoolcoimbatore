@@ -70,10 +70,7 @@ export function Contact() {
                       School Hours
                     </h4>
                     <p className="text-gray-600">
-                      Monday - Friday: 8:00 AM - 4:00 PM
-                    </p>
-                    <p className="text-gray-600">
-                      Saturday: 8:00 AM - 12:00 PM
+                      Monday-Friday 9 AM to 12.30 PM
                     </p>
                   </div>
                 </div>
