@@ -12,7 +12,6 @@ import { Contact } from "../components/Contact";
 import { Footer } from "../components/Footer";
 import { FloatingElements } from "../components/FloatingElements";
 import { ScrollToTop } from "../components/ScrollToTop";
-import { AdmissionFlyerPopup } from "../components/AdmissionFlyerPopup";
 
 export function Home() {
   return (
@@ -31,7 +30,6 @@ export function Home() {
       <Contact />
       <Footer />
       <ScrollToTop />
-      <AdmissionFlyerPopup />
     </div>
   );
 }

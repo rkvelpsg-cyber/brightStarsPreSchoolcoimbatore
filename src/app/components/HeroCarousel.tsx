@@ -19,7 +19,6 @@ import smartClassroom from "../../imports/Image_5.jpeg";
 import indoorPlay from "../../imports/Image_2.jpeg";
 import ballPool from "../../imports/Image_3.jpeg";
 import toddlerActivity from "../../imports/Image_4.jpeg";
-import feesOffer from "../../imports/Fees.jpeg";
 
 interface SlideData {
   id: number;
@@ -124,18 +123,6 @@ const slides: SlideData[] = [
   },
   {
     id: 6,
-    image: feesOffer,
-    headline: "Special Admission Offer",
-    subheading: "Flat ₹11,000 Discount on Fees",
-    discount: "₹11,000",
-    buttons: [
-      { text: "Apply Now", variant: "primary" },
-      { text: "Talk to Counselor", variant: "secondary" },
-    ],
-    features: ["Limited Period Offer", "Admissions Open Now"],
-  },
-  {
-    id: 7,
     image: "/School_Promo_2.jpeg",
     headline: "A Bright and Caring Preschool Campus",
     subheading:
@@ -146,7 +133,7 @@ const slides: SlideData[] = [
     ],
   },
   {
-    id: 8,
+    id: 7,
     image: "/School_Promo_3.jpeg",
     headline: "Where Learning Feels Like Home",
     subheading:
