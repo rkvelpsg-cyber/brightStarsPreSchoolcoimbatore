@@ -76,6 +76,9 @@ import {
   Trash2,
   Video,
   FileText,
+  Download,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 
 // ============================================================================
@@ -237,6 +240,77 @@ const EVENTS_STORAGE_KEY = "birla-events-data";
 const FEES_STORAGE_KEY = "birla-fees-data";
 const ALL_STUDENTS_TARGET = "__all_students__";
 const LOCAL_AUTH_USER_KEY = "birla-local-auth-user";
+type OperationRange = "daily" | "weekly" | "monthly";
+
+function isWithinOperationRange(dateInput: string, range: OperationRange) {
+  if (!dateInput) {
+    return false;
+  }
+
+  const date = new Date(dateInput);
+  if (Number.isNaN(date.getTime())) {
+    return false;
+  }
+
+  const now = new Date();
+
+  if (range === "daily") {
+    return (
+      date.getFullYear() === now.getFullYear() &&
+      date.getMonth() === now.getMonth() &&
+      date.getDate() === now.getDate()
+    );
+  }
+
+  if (range === "weekly") {
+    const windowStart = new Date(now);
+    windowStart.setDate(now.getDate() - 6);
+    windowStart.setHours(0, 0, 0, 0);
+
+    const windowEnd = new Date(now);
+    windowEnd.setHours(23, 59, 59, 999);
+
+    return date >= windowStart && date <= windowEnd;
+  }
+
+  return (
+    date.getFullYear() === now.getFullYear() &&
+    date.getMonth() === now.getMonth()
+  );
+}
+
+function getMediaTypeFromUrl(url: string): "image" | "video" | "document" {
+  const normalized = url.trim().toLowerCase();
+
+  if (normalized.startsWith("data:image/")) {
+    return "image";
+  }
+
+  if (normalized.startsWith("data:video/")) {
+    return "video";
+  }
+
+  if (/(\.png|\.jpe?g|\.gif|\.webp|\.bmp|\.svg)(\?|#|$)/i.test(normalized)) {
+    return "image";
+  }
+
+  if (/(\.mp4|\.webm|\.mov|\.avi|\.mkv)(\?|#|$)/i.test(normalized)) {
+    return "video";
+  }
+
+  return "document";
+}
+
+function buildDownloadName(title: string, index: number, extension: string) {
+  const safeTitle = title
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 50);
+
+  return `${safeTitle || "attachment"}-${index + 1}.${extension}`;
+}
+
 const STUDENT_CLASS_OPTIONS = [
   "Playgroup (LY-1)",
   "Nursery (LY-2)",
@@ -358,7 +432,7 @@ function getStoredActivities(): ActivityType[] {
 
   try {
     const parsed = JSON.parse(raw) as Partial<ActivityType>[];
-    if (Array.isArray(parsed) && parsed.length > 0) {
+    if (Array.isArray(parsed)) {
       return parsed.map((activity, index) => ({
         id: activity.id || `a${index + 1}`,
         title: activity.title || "Daily Update",
@@ -414,7 +488,7 @@ function getStoredEvents(): Event[] {
 
   try {
     const parsed = JSON.parse(raw) as Partial<Event>[];
-    if (Array.isArray(parsed) && parsed.length > 0) {
+    if (Array.isArray(parsed)) {
       return parsed.map((event, index) => ({
         id: event.id || `e${index + 1}`,
         title: event.title || "School Event",
@@ -1000,6 +1074,7 @@ function LoginPage({
   );
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
@@ -1105,15 +1180,31 @@ function LoginPage({
 
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="Enter your password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                disabled={loading}
-              />
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Enter your password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  disabled={loading}
+                  className="pr-10"
+                />
+                <button
+                  type="button"
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  onClick={() => setShowPassword((current) => !current)}
+                  disabled={loading}
+                  className="absolute inset-y-0 right-0 flex items-center px-3 text-muted-foreground hover:text-foreground"
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
+                </button>
+              </div>
             </div>
 
             <Button
@@ -1153,19 +1244,24 @@ function LoginPage({
 // ADMIN DASHBOARD COMPONENTS
 // ============================================================================
 
-function DashboardOverview() {
+function DashboardOverview({
+  activities,
+  events,
+}: {
+  activities: ActivityType[];
+  events: Event[];
+}) {
   const students = getStoredStudents();
-  const activities = getStoredActivities();
-  const events = getStoredEvents();
+  const fees = getStoredFees();
   const totalStudents = students.length;
   const recentActivities = activities.slice(0, 3);
-  const pendingFees = mockFees.filter(
+  const pendingFees = fees.filter(
     (f) => f.status === "pending" || f.status === "overdue",
   ).length;
   const upcomingEvents = events.filter(
     (e) => new Date(e.date) >= new Date(),
   ).length;
-  const totalRevenue = mockFees
+  const totalRevenue = fees
     .filter((f) => f.status === "paid")
     .reduce((sum, f) => sum + f.amount, 0);
 
@@ -1215,7 +1311,7 @@ function DashboardOverview() {
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-destructive">
-              ₹{(totalRevenue / 1000).toFixed(0)}K
+              ₹{totalRevenue.toLocaleString("en-IN")}
             </div>
             <p className="text-xs text-muted-foreground mt-1">
               {pendingFees} pending payments
@@ -1924,7 +2020,11 @@ function StudentsTab() {
   );
 }
 
-function ActivitiesTab() {
+function ActivitiesTab({
+  onActivitiesChange,
+}: {
+  onActivitiesChange?: (activities: ActivityType[]) => void;
+}) {
   const [activities, setActivities] = useState<ActivityType[]>(() =>
     getStoredActivities(),
   );
@@ -1937,6 +2037,7 @@ function ActivitiesTab() {
   );
   const [activityError, setActivityError] = useState("");
   const [activityNotice, setActivityNotice] = useState("");
+  const [activityRange, setActivityRange] = useState<OperationRange>("weekly");
   const [isUploadingMedia, setIsUploadingMedia] = useState(false);
   const [targetStudentId, setTargetStudentId] =
     useState<string>(ALL_STUDENTS_TARGET);
@@ -1955,6 +2056,10 @@ function ActivitiesTab() {
     setActivities(getStoredActivities());
     setStudents(getStoredStudents());
   }, []);
+
+  useEffect(() => {
+    onActivitiesChange?.(activities);
+  }, [activities, onActivitiesChange]);
 
   const resetActivityForm = () => {
     setEditingActivityId(null);
@@ -2082,6 +2187,7 @@ function ActivitiesTab() {
     const updated = activities.filter((activity) => activity.id !== activityId);
     setActivities(updated);
     saveStoredActivities(updated);
+    onActivitiesChange?.(updated);
   };
 
   const handleAddActivity = () => {
@@ -2102,13 +2208,7 @@ function ActivitiesTab() {
       return;
     }
 
-    const selectedStudent = students.find(
-      (student) => student.id === targetStudentId,
-    );
-    const targetClass =
-      targetStudentId === ALL_STUDENTS_TARGET
-        ? "All Students"
-        : (selectedStudent?.class ?? "Selected Student");
+    const targetClass = "All Students";
 
     const activity: ActivityType = {
       id:
@@ -2121,7 +2221,7 @@ function ActivitiesTab() {
       class: targetClass,
       photos,
       videos,
-      targetStudentIds: [targetStudentId],
+      targetStudentIds: [ALL_STUDENTS_TARGET],
       postedBy: "Admin",
     };
 
@@ -2134,6 +2234,7 @@ function ActivitiesTab() {
     setActivities(updated);
     setDialogOpen(false);
     resetActivityForm();
+    onActivitiesChange?.(updated);
 
     const persisted = saveStoredActivities(updated);
     if (!persisted) {
@@ -2145,6 +2246,10 @@ function ActivitiesTab() {
 
     setActivityNotice("Activity saved successfully.");
   };
+
+  const filteredActivities = activities.filter((activity) =>
+    isWithinOperationRange(activity.date, activityRange),
+  );
 
   return (
     <div className="space-y-6">
@@ -2345,6 +2450,10 @@ function ActivitiesTab() {
               </DialogContent>
             </Dialog>
           </div>
+          <OperationRangeControl
+            value={activityRange}
+            onChange={setActivityRange}
+          />
         </CardHeader>
         <CardContent>
           {activityNotice && (
@@ -2354,7 +2463,7 @@ function ActivitiesTab() {
           )}
 
           <div className="space-y-4">
-            {activities.map((activity) => (
+            {filteredActivities.map((activity) => (
               <Card key={activity.id} className="overflow-hidden">
                 <CardHeader className="bg-muted/50">
                   <div className="flex items-start justify-between">
@@ -2450,6 +2559,7 @@ function ActivitiesTab() {
 
 function FeesTab() {
   const [fees, setFees] = useState<Fee[]>(() => getStoredFees());
+  const [feesRange, setFeesRange] = useState<OperationRange>("weekly");
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState<
     "all" | "paid" | "pending" | "overdue"
@@ -2510,7 +2620,13 @@ function FeesTab() {
   const getFeeStudentName = (fee: Fee) =>
     studentsById.get(fee.studentId) || fee.studentName;
 
-  const filteredFees = fees.filter((fee) => {
+  const feesInRange = fees.filter((fee) => {
+    const referenceDate =
+      fee.status === "paid" ? fee.paidDate || fee.dueDate : fee.dueDate;
+    return isWithinOperationRange(referenceDate, feesRange);
+  });
+
+  const filteredFees = feesInRange.filter((fee) => {
     const matchesSearch =
       getFeeStudentName(fee).toLowerCase().includes(searchTerm.toLowerCase()) ||
       fee.term.toLowerCase().includes(searchTerm.toLowerCase());
@@ -2518,14 +2634,14 @@ function FeesTab() {
     return matchesSearch && matchesFilter;
   });
 
-  const totalFees = fees.reduce((sum, fee) => sum + fee.amount, 0);
-  const paidFees = fees
+  const totalFees = feesInRange.reduce((sum, fee) => sum + fee.amount, 0);
+  const paidFees = feesInRange
     .filter((f) => f.status === "paid")
     .reduce((sum, fee) => sum + fee.amount, 0);
-  const pendingFees = fees
+  const pendingFees = feesInRange
     .filter((f) => f.status === "pending")
     .reduce((sum, fee) => sum + fee.amount, 0);
-  const overdueFees = fees
+  const overdueFees = feesInRange
     .filter((f) => f.status === "overdue")
     .reduce((sum, fee) => sum + fee.amount, 0);
 
@@ -2656,6 +2772,7 @@ function FeesTab() {
       <Card>
         <CardHeader>
           <CardTitle>Fee Management</CardTitle>
+          <OperationRangeControl value={feesRange} onChange={setFeesRange} />
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex gap-4">
@@ -2849,13 +2966,18 @@ function FeesTab() {
   );
 }
 
-function EventsTab() {
+function EventsTab({
+  onEventsChange,
+}: {
+  onEventsChange?: (events: Event[]) => void;
+}) {
   const [events, setEvents] = useState<Event[]>(() => getStoredEvents());
   const [fees, setFees] = useState<Fee[]>(() => getStoredFees());
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingEventId, setEditingEventId] = useState<string | null>(null);
   const [eventError, setEventError] = useState("");
   const [eventNotice, setEventNotice] = useState("");
+  const [eventsRange, setEventsRange] = useState<OperationRange>("weekly");
   const [isUploadingMedia, setIsUploadingMedia] = useState(false);
   const [photoUrls, setPhotoUrls] = useState<string>("");
   const [videoUrls, setVideoUrls] = useState<string>("");
@@ -2871,6 +2993,10 @@ function EventsTab() {
   useEffect(() => {
     setEvents(getStoredEvents());
   }, []);
+
+  useEffect(() => {
+    onEventsChange?.(events);
+  }, [events, onEventsChange]);
 
   const resetEventForm = () => {
     setEditingEventId(null);
@@ -2996,6 +3122,7 @@ function EventsTab() {
     const updated = events.filter((event) => event.id !== eventId);
     setEvents(updated);
     saveStoredEvents(updated);
+    onEventsChange?.(updated);
   };
 
   const handleAddEvent = () => {
@@ -3037,6 +3164,7 @@ function EventsTab() {
     setEvents(updated);
     setDialogOpen(false);
     resetEventForm();
+    onEventsChange?.(updated);
 
     const persisted = saveStoredEvents(updated);
     if (!persisted) {
@@ -3049,8 +3177,13 @@ function EventsTab() {
     setEventNotice("Event saved successfully.");
   };
 
-  const upcomingEvents = events.filter((e) => new Date(e.date) >= new Date());
-  const pastEvents = events.filter((e) => new Date(e.date) < new Date());
+  const eventsInRange = events.filter((event) =>
+    isWithinOperationRange(event.date, eventsRange),
+  );
+  const upcomingEvents = eventsInRange.filter(
+    (e) => new Date(e.date) >= new Date(),
+  );
+  const pastEvents = eventsInRange.filter((e) => new Date(e.date) < new Date());
 
   return (
     <div className="space-y-6">
@@ -3233,6 +3366,10 @@ function EventsTab() {
               </DialogContent>
             </Dialog>
           </div>
+          <OperationRangeControl
+            value={eventsRange}
+            onChange={setEventsRange}
+          />
         </CardHeader>
         <CardContent className="space-y-6">
           {eventNotice && (
@@ -3419,6 +3556,8 @@ function RegistrationsTab() {
   const [enquiries, setEnquiries] = useState<AdmissionEnquirySubmission[]>(() =>
     getStoredAdmissionEnquiries(),
   );
+  const [registrationsRange, setRegistrationsRange] =
+    useState<OperationRange>("weekly");
   const [editingEnquiryId, setEditingEnquiryId] = useState<string | null>(null);
   const [draftValues, setDraftValues] = useState<AdmissionFormValues | null>(
     null,
@@ -3497,6 +3636,10 @@ function RegistrationsTab() {
     }
   };
 
+  const filteredEnquiries = enquiries.filter((enquiry) =>
+    isWithinOperationRange(enquiry.submittedAtIso, registrationsRange),
+  );
+
   return (
     <Card>
       <CardHeader>
@@ -3504,16 +3647,20 @@ function RegistrationsTab() {
         <CardDescription>
           Submissions from the Apply Admission form are listed here.
         </CardDescription>
+        <OperationRangeControl
+          value={registrationsRange}
+          onChange={setRegistrationsRange}
+        />
       </CardHeader>
       <CardContent>
-        {enquiries.length === 0 ? (
+        {filteredEnquiries.length === 0 ? (
           <div className="rounded-lg border border-dashed p-6 text-sm text-muted-foreground">
             No admission enquiries yet. When parents click Save Admission
             Details on the Apply Admission page, entries will appear here.
           </div>
         ) : (
           <div className="space-y-4">
-            {enquiries.map((enquiry) => (
+            {filteredEnquiries.map((enquiry) => (
               <Card key={enquiry.id} className="border">
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between gap-2">
@@ -3739,10 +3886,83 @@ function EditableField({
   );
 }
 
+function OperationRangeControl({
+  value,
+  onChange,
+}: {
+  value: OperationRange;
+  onChange: (value: OperationRange) => void;
+}) {
+  return (
+    <div className="flex flex-wrap items-center gap-2 rounded-lg border bg-muted/30 p-2">
+      <div className="flex items-center gap-2 px-2 text-sm text-muted-foreground">
+        <Calendar className="h-4 w-4" />
+        <span>Operations</span>
+      </div>
+      <Button
+        type="button"
+        size="sm"
+        variant={value === "daily" ? "default" : "outline"}
+        onClick={() => onChange("daily")}
+      >
+        Daily
+      </Button>
+      <Button
+        type="button"
+        size="sm"
+        variant={value === "weekly" ? "default" : "outline"}
+        onClick={() => onChange("weekly")}
+      >
+        Weekly
+      </Button>
+      <Button
+        type="button"
+        size="sm"
+        variant={value === "monthly" ? "default" : "outline"}
+        onClick={() => onChange("monthly")}
+      >
+        Monthly
+      </Button>
+    </div>
+  );
+}
+
 function AdminDashboard() {
   const { user, logout } = useAuth();
   const [activeTab, setActiveTab] = useState("overview");
   const [showLogin, setShowLogin] = useState(false);
+  const [overviewActivities, setOverviewActivities] = useState<ActivityType[]>(
+    () => getStoredActivities(),
+  );
+  const [overviewEvents, setOverviewEvents] = useState<Event[]>(() =>
+    getStoredEvents(),
+  );
+
+  useEffect(() => {
+    const syncOverviewData = () => {
+      setOverviewActivities(getStoredActivities());
+      setOverviewEvents(getStoredEvents());
+    };
+
+    const handleStorage = (event: StorageEvent) => {
+      if (
+        !event.key ||
+        event.key === ACTIVITIES_STORAGE_KEY ||
+        event.key === EVENTS_STORAGE_KEY
+      ) {
+        syncOverviewData();
+      }
+    };
+
+    syncOverviewData();
+    window.addEventListener("storage", handleStorage);
+    window.addEventListener("focus", syncOverviewData);
+
+    return () => {
+      window.removeEventListener("storage", handleStorage);
+      window.removeEventListener("focus", syncOverviewData);
+    };
+  }, []);
 
   const handleLogout = async () => {
     await logout();
@@ -3822,7 +4042,10 @@ function AdminDashboard() {
           </TabsList>
 
           <TabsContent value="overview">
-            <DashboardOverview />
+            <DashboardOverview
+              activities={overviewActivities}
+              events={overviewEvents}
+            />
           </TabsContent>
 
           <TabsContent value="students">
@@ -3830,7 +4053,7 @@ function AdminDashboard() {
           </TabsContent>
 
           <TabsContent value="activities">
-            <ActivitiesTab />
+            <ActivitiesTab onActivitiesChange={setOverviewActivities} />
           </TabsContent>
 
           <TabsContent value="fees">
@@ -3838,7 +4061,7 @@ function AdminDashboard() {
           </TabsContent>
 
           <TabsContent value="events">
-            <EventsTab />
+            <EventsTab onEventsChange={setOverviewEvents} />
           </TabsContent>
 
           <TabsContent value="registrations">
@@ -3857,6 +4080,12 @@ function AdminDashboard() {
 function ParentDashboard() {
   const { user, logout } = useAuth();
   const [showLogin, setShowLogin] = useState(false);
+  const [parentActivitiesRange, setParentActivitiesRange] =
+    useState<OperationRange>("weekly");
+  const [parentFeesRange, setParentFeesRange] =
+    useState<OperationRange>("weekly");
+  const [parentEventsRange, setParentEventsRange] =
+    useState<OperationRange>("weekly");
   const [students, setStudents] = useState<Student[]>(() =>
     getStoredStudents(),
   );
@@ -3919,16 +4148,21 @@ function ParentDashboard() {
   }
 
   const myChildren = students.filter((s) => user?.studentIds?.includes(s.id));
-  const myChildIds = myChildren.map((child) => child.id);
-  const myActivities = activities.filter((activity) => {
-    const targets = activity.targetStudentIds || [ALL_STUDENTS_TARGET];
-    if (targets.includes(ALL_STUDENTS_TARGET)) {
-      return true;
-    }
-    return myChildIds.some((id) => targets.includes(id));
-  });
-  const myFees = fees.filter((f) => user?.studentIds?.includes(f.studentId));
-  const upcomingEvents = events.filter((e) => new Date(e.date) >= new Date());
+  const myActivities = activities
+    .filter((activity) =>
+      isWithinOperationRange(activity.date, parentActivitiesRange),
+    )
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  const myFees = fees
+    .filter((f) => user?.studentIds?.includes(f.studentId))
+    .filter((fee) => {
+      const referenceDate =
+        fee.status === "paid" ? fee.paidDate || fee.dueDate : fee.dueDate;
+      return isWithinOperationRange(referenceDate, parentFeesRange);
+    });
+  const recentEvents = events
+    .filter((event) => isWithinOperationRange(event.date, parentEventsRange))
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
   const totalFees = myFees.reduce((sum, fee) => sum + fee.amount, 0);
   const paidFees = myFees
@@ -4043,77 +4277,168 @@ function ParentDashboard() {
 
             <TabsContent value="activities" className="space-y-4 mt-6">
               <h3 className="font-semibold text-lg">Recent Activities</h3>
-              {myActivities.map((activity) => (
-                <Card key={activity.id}>
-                  <CardHeader className="bg-muted/50">
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <CardTitle className="text-lg">
-                          {activity.title}
-                        </CardTitle>
-                        <div className="flex items-center gap-3 mt-2 text-sm text-muted-foreground">
-                          <Badge variant="secondary">{activity.class}</Badge>
-                          <div className="flex items-center gap-1">
-                            <Clock className="w-3 h-3" />
-                            <span>
-                              {new Date(activity.date).toLocaleDateString(
-                                "en-IN",
-                              )}{" "}
-                              • {activity.time}
-                            </span>
+              <OperationRangeControl
+                value={parentActivitiesRange}
+                onChange={setParentActivitiesRange}
+              />
+              {myActivities.length === 0 && (
+                <Card>
+                  <CardContent className="pt-6 text-sm text-muted-foreground">
+                    No activities have been published yet.
+                  </CardContent>
+                </Card>
+              )}
+              {myActivities.map((activity) => {
+                const activityDocumentLinks = [
+                  ...activity.photos,
+                  ...(activity.videos || []),
+                ].filter((url) => getMediaTypeFromUrl(url) === "document");
+
+                return (
+                  <Card key={activity.id}>
+                    <CardHeader className="bg-muted/50">
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <CardTitle className="text-lg">
+                            {activity.title}
+                          </CardTitle>
+                          <div className="flex items-center gap-3 mt-2 text-sm text-muted-foreground">
+                            <Badge variant="secondary">{activity.class}</Badge>
+                            <div className="flex items-center gap-1">
+                              <Clock className="w-3 h-3" />
+                              <span>
+                                {new Date(activity.date).toLocaleDateString(
+                                  "en-IN",
+                                )}{" "}
+                                • {activity.time}
+                              </span>
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="pt-4">
-                    <p className="text-sm text-muted-foreground mb-4">
-                      {activity.description}
-                    </p>
-                    {activity.photos.length > 0 && (
-                      <div className="grid grid-cols-3 gap-2">
-                        {activity.photos.map((photo, idx) => (
-                          <div
-                            key={idx}
-                            className="relative aspect-square rounded-lg overflow-hidden bg-muted group"
-                          >
-                            <img
-                              src={photo}
-                              alt={`${activity.title} photo ${idx + 1}`}
-                              className="w-full h-full object-cover transition-transform group-hover:scale-105"
-                            />
-                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                              <ImageIcon className="w-8 h-8 text-white" />
+                    </CardHeader>
+                    <CardContent className="pt-4">
+                      <p className="text-sm text-muted-foreground mb-4">
+                        {activity.description}
+                      </p>
+                      {activity.photos.length > 0 && (
+                        <div className="grid grid-cols-3 gap-2">
+                          {activity.photos.map((photo, idx) => (
+                            <div
+                              key={idx}
+                              className="relative aspect-square rounded-lg overflow-hidden bg-muted group"
+                            >
+                              <img
+                                src={photo}
+                                alt={`${activity.title} photo ${idx + 1}`}
+                                className="w-full h-full object-cover transition-transform group-hover:scale-105"
+                              />
+                              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                <ImageIcon className="w-8 h-8 text-white" />
+                              </div>
+                              <a
+                                href={photo}
+                                download={buildDownloadName(
+                                  activity.title,
+                                  idx,
+                                  "jpg",
+                                )}
+                                className="absolute bottom-2 right-2"
+                              >
+                                <Button
+                                  type="button"
+                                  size="sm"
+                                  variant="secondary"
+                                >
+                                  <Download className="w-3.5 h-3.5 mr-1" />
+                                  Download
+                                </Button>
+                              </a>
                             </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {activity.videos && activity.videos.length > 0 && (
+                        <div className="mt-3 grid grid-cols-1 gap-3 md:grid-cols-2">
+                          {activity.videos.map((video, idx) => (
+                            <div
+                              key={`${activity.id}-parent-video-${idx}`}
+                              className="space-y-2"
+                            >
+                              <video
+                                controls
+                                className="w-full rounded-lg border"
+                                src={video}
+                              >
+                                Your browser does not support video playback.
+                              </video>
+                              <a
+                                href={video}
+                                download={buildDownloadName(
+                                  activity.title,
+                                  idx,
+                                  "mp4",
+                                )}
+                              >
+                                <Button
+                                  type="button"
+                                  size="sm"
+                                  variant="outline"
+                                >
+                                  <Download className="w-3.5 h-3.5 mr-1" />
+                                  Download Video
+                                </Button>
+                              </a>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {activityDocumentLinks.length > 0 && (
+                        <div className="mt-4 space-y-2">
+                          <p className="text-sm font-medium text-slate-700">
+                            Documents
+                          </p>
+                          <div className="flex flex-wrap gap-2">
+                            {activityDocumentLinks.map((doc, idx) => (
+                              <a
+                                key={`${activity.id}-doc-${idx}`}
+                                href={doc}
+                                download={buildDownloadName(
+                                  activity.title,
+                                  idx,
+                                  "pdf",
+                                )}
+                              >
+                                <Button
+                                  type="button"
+                                  size="sm"
+                                  variant="outline"
+                                >
+                                  <FileText className="w-3.5 h-3.5 mr-1" />
+                                  Download Doc {idx + 1}
+                                </Button>
+                              </a>
+                            ))}
                           </div>
-                        ))}
-                      </div>
-                    )}
+                        </div>
+                      )}
 
-                    {activity.videos && activity.videos.length > 0 && (
-                      <div className="mt-3 grid grid-cols-1 gap-3 md:grid-cols-2">
-                        {activity.videos.map((video, idx) => (
-                          <video
-                            key={`${activity.id}-parent-video-${idx}`}
-                            controls
-                            className="w-full rounded-lg border"
-                            src={video}
-                          >
-                            Your browser does not support video playback.
-                          </video>
-                        ))}
-                      </div>
-                    )}
-
-                    <p className="text-xs text-muted-foreground mt-3">
-                      Posted by {activity.postedBy}
-                    </p>
-                  </CardContent>
-                </Card>
-              ))}
+                      <p className="text-xs text-muted-foreground mt-3">
+                        Posted by {activity.postedBy}
+                      </p>
+                    </CardContent>
+                  </Card>
+                );
+              })}
             </TabsContent>
 
             <TabsContent value="fees" className="space-y-6 mt-6">
+              <OperationRangeControl
+                value={parentFeesRange}
+                onChange={setParentFeesRange}
+              />
               <div className="grid gap-4 md:grid-cols-3">
                 <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
                   <CardHeader className="pb-2">
@@ -4192,53 +4517,159 @@ function ParentDashboard() {
             </TabsContent>
 
             <TabsContent value="events" className="space-y-4 mt-6">
-              <h3 className="font-semibold text-lg">Upcoming Events</h3>
+              <h3 className="font-semibold text-lg">Recent Events</h3>
+              <OperationRangeControl
+                value={parentEventsRange}
+                onChange={setParentEventsRange}
+              />
+              {recentEvents.length === 0 && (
+                <Card>
+                  <CardContent className="pt-6 text-sm text-muted-foreground">
+                    No events have been published yet.
+                  </CardContent>
+                </Card>
+              )}
               <div className="grid gap-4 md:grid-cols-2">
-                {upcomingEvents.map((event) => (
-                  <Card key={event.id} className="overflow-hidden">
-                    {event.photos.length > 0 && (
-                      <div className="relative h-48 bg-muted">
-                        <img
-                          src={event.photos[0]}
-                          alt={event.title}
-                          className="w-full h-full object-cover"
-                        />
-                        {event.photos.length > 1 && (
-                          <Badge className="absolute top-2 right-2 bg-black/60">
-                            <ImageIcon className="w-3 h-3 mr-1" />
-                            {event.photos.length} photos
-                          </Badge>
+                {recentEvents.map((event) => {
+                  const eventDocumentLinks = [
+                    ...event.photos,
+                    ...(event.videos || []),
+                  ].filter((url) => getMediaTypeFromUrl(url) === "document");
+
+                  return (
+                    <Card key={event.id} className="overflow-hidden">
+                      {event.photos.length > 0 && (
+                        <div className="relative h-48 bg-muted">
+                          <img
+                            src={event.photos[0]}
+                            alt={event.title}
+                            className="w-full h-full object-cover"
+                          />
+                          {event.photos.length > 1 && (
+                            <Badge className="absolute top-2 right-2 bg-black/60">
+                              <ImageIcon className="w-3 h-3 mr-1" />
+                              {event.photos.length} photos
+                            </Badge>
+                          )}
+                        </div>
+                      )}
+                      <CardHeader>
+                        <CardTitle className="text-lg">{event.title}</CardTitle>
+                        <div className="space-y-2 text-sm text-muted-foreground">
+                          <div className="flex items-center gap-2">
+                            <Calendar className="w-4 h-4" />
+                            <span>
+                              {new Date(event.date).toLocaleDateString(
+                                "en-IN",
+                                {
+                                  weekday: "long",
+                                  year: "numeric",
+                                  month: "long",
+                                  day: "numeric",
+                                },
+                              )}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Clock className="w-4 h-4" />
+                            <span>{event.time}</span>
+                          </div>
+                        </div>
+                      </CardHeader>
+                      <CardContent>
+                        <p className="text-sm text-muted-foreground mb-4">
+                          {event.description}
+                        </p>
+
+                        {event.photos.length > 0 && (
+                          <div className="mb-3 flex flex-wrap gap-2">
+                            {event.photos.map((photo, idx) => (
+                              <a
+                                key={`${event.id}-photo-download-${idx}`}
+                                href={photo}
+                                download={buildDownloadName(
+                                  event.title,
+                                  idx,
+                                  "jpg",
+                                )}
+                              >
+                                <Button
+                                  type="button"
+                                  size="sm"
+                                  variant="outline"
+                                >
+                                  <Download className="w-3.5 h-3.5 mr-1" />
+                                  Download Photo {idx + 1}
+                                </Button>
+                              </a>
+                            ))}
+                          </div>
                         )}
-                      </div>
-                    )}
-                    <CardHeader>
-                      <CardTitle className="text-lg">{event.title}</CardTitle>
-                      <div className="space-y-2 text-sm text-muted-foreground">
-                        <div className="flex items-center gap-2">
-                          <Calendar className="w-4 h-4" />
-                          <span>
-                            {new Date(event.date).toLocaleDateString("en-IN", {
-                              weekday: "long",
-                              year: "numeric",
-                              month: "long",
-                              day: "numeric",
-                            })}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Clock className="w-4 h-4" />
-                          <span>{event.time}</span>
-                        </div>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-sm text-muted-foreground mb-4">
-                        {event.description}
-                      </p>
-                      <Button className="w-full">RSVP for Event</Button>
-                    </CardContent>
-                  </Card>
-                ))}
+
+                        {event.videos && event.videos.length > 0 && (
+                          <div className="mb-3 grid grid-cols-1 gap-3 md:grid-cols-2">
+                            {event.videos.map((video, idx) => (
+                              <div
+                                key={`${event.id}-video-download-${idx}`}
+                                className="space-y-2"
+                              >
+                                <video
+                                  controls
+                                  className="w-full rounded-lg border"
+                                  src={video}
+                                >
+                                  Your browser does not support video playback.
+                                </video>
+                                <a
+                                  href={video}
+                                  download={buildDownloadName(
+                                    event.title,
+                                    idx,
+                                    "mp4",
+                                  )}
+                                >
+                                  <Button
+                                    type="button"
+                                    size="sm"
+                                    variant="outline"
+                                  >
+                                    <Download className="w-3.5 h-3.5 mr-1" />
+                                    Download Video
+                                  </Button>
+                                </a>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+
+                        {eventDocumentLinks.length > 0 && (
+                          <div className="flex flex-wrap gap-2">
+                            {eventDocumentLinks.map((doc, idx) => (
+                              <a
+                                key={`${event.id}-doc-download-${idx}`}
+                                href={doc}
+                                download={buildDownloadName(
+                                  event.title,
+                                  idx,
+                                  "pdf",
+                                )}
+                              >
+                                <Button
+                                  type="button"
+                                  size="sm"
+                                  variant="outline"
+                                >
+                                  <FileText className="w-3.5 h-3.5 mr-1" />
+                                  Download Doc {idx + 1}
+                                </Button>
+                              </a>
+                            ))}
+                          </div>
+                        )}
+                      </CardContent>
+                    </Card>
+                  );
+                })}
               </div>
             </TabsContent>
           </Tabs>
