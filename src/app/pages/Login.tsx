@@ -1255,6 +1255,19 @@ function DashboardOverview({
   const fees = getStoredFees();
   const totalStudents = students.length;
   const recentActivities = activities.slice(0, 3);
+  
+  // Filter activities to show only those from the current month
+  const currentDate = new Date();
+  const currentMonth = currentDate.getMonth();
+  const currentYear = currentDate.getFullYear();
+  const activitiesThisMonth = activities.filter((a) => {
+    const activityDate = new Date(a.date);
+    return (
+      activityDate.getMonth() === currentMonth &&
+      activityDate.getFullYear() === currentYear
+    );
+  }).length;
+  
   const pendingFees = fees.filter(
     (f) => f.status === "pending" || f.status === "overdue",
   ).length;
@@ -1294,7 +1307,7 @@ function DashboardOverview({
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-extrabold text-slate-900">
-              {activities.length}
+              {activitiesThisMonth}
             </div>
             <p className="text-xs text-muted-foreground mt-1">
               Posted this month
