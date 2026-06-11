@@ -240,7 +240,29 @@ const EVENTS_STORAGE_KEY = "birla-events-data";
 const FEES_STORAGE_KEY = "birla-fees-data";
 const ALL_STUDENTS_TARGET = "__all_students__";
 const LOCAL_AUTH_USER_KEY = "birla-local-auth-user";
+const STUDENTS_SYNC_TABLE = "student_credentials";
 type OperationRange = "daily" | "weekly" | "monthly";
+
+type StudentCredentialRow = {
+  id: string;
+  name: string;
+  age: number;
+  father_name: string | null;
+  mother_name: string | null;
+  father_phone: string | null;
+  mother_phone: string | null;
+  parent_name: string | null;
+  parent_email: string | null;
+  parent_auth_email: string | null;
+  parent_phone: string | null;
+  parent_username: string | null;
+  parent_password?: string | null;
+  address: string | null;
+  registration_number: string | null;
+  photo_url: string | null;
+  class_name: string | null;
+  admission_date: string | null;
+};
 
 function isWithinOperationRange(dateInput: string, range: OperationRange) {
   if (!dateInput) {
@@ -353,6 +375,101 @@ function canUseLocalStorage() {
   return (
     typeof window !== "undefined" && typeof window.localStorage !== "undefined"
   );
+}
+
+function mapStudentRowToStudent(
+  row: StudentCredentialRow,
+  index: number,
+): Student {
+  const parentAuthEmail =
+    row.parent_auth_email || row.parent_email || row.parent_username || "";
+
+  return {
+    id: row.id || `s${index + 1}`,
+    name: row.name || "Student",
+    age: Number(row.age) || 3,
+    fatherName: row.father_name || "Father Name",
+    motherName: row.mother_name || "Mother Name",
+    fatherPhone: normalizePhoneDigits(row.father_phone),
+    motherPhone: normalizePhoneDigits(row.mother_phone),
+    parentName: row.parent_name || "Parent",
+    parentEmail: parentAuthEmail,
+    parentPhone: normalizePhoneDigits(row.parent_phone),
+    parentUsername: row.parent_username || parentAuthEmail || "",
+    parentPassword: row.parent_password || "",
+    address: row.address || "",
+    registrationNumber: row.registration_number || `BOM-LEGACY-${index + 1}`,
+    photoUrl:
+      row.photo_url ||
+      `https://api.dicebear.com/7.x/avataaars/svg?seed=${row.name || "Student"}`,
+    class: normalizeStudentClass(row.class_name),
+    admissionDate: row.admission_date || new Date().toISOString().split("T")[0],
+  };
+}
+
+function mapStudentToRow(student: Student): StudentCredentialRow {
+  return {
+    id: student.id,
+    name: student.name,
+    age: Number(student.age) || 3,
+    father_name: student.fatherName,
+    mother_name: student.motherName,
+    father_phone: normalizePhoneDigits(student.fatherPhone),
+    mother_phone: normalizePhoneDigits(student.motherPhone),
+    parent_name: student.parentName,
+    parent_email: student.parentEmail,
+    parent_auth_email: student.parentEmail,
+    parent_phone: normalizePhoneDigits(student.parentPhone),
+    parent_username: student.parentUsername,
+    address: student.address,
+    registration_number: student.registrationNumber,
+    photo_url: student.photoUrl,
+    class_name: normalizeStudentClass(student.class),
+    admission_date: student.admissionDate,
+  };
+}
+
+async function fetchRemoteStudents(): Promise<Student[] | null> {
+  const { data, error } = await supabase
+    .from(STUDENTS_SYNC_TABLE)
+    .select(
+      "id,name,age,father_name,mother_name,father_phone,mother_phone,parent_name,parent_email,parent_auth_email,parent_phone,parent_username,address,registration_number,photo_url,class_name,admission_date",
+    )
+    .order("created_at", { ascending: true });
+
+  if (error || !Array.isArray(data)) {
+    return null;
+  }
+
+  return data.map((row, index) =>
+    mapStudentRowToStudent(row as StudentCredentialRow, index),
+  );
+}
+
+async function upsertRemoteStudents(students: Student[]): Promise<boolean> {
+  const rows = students.map(mapStudentToRow);
+  const { error } = await supabase
+    .from(STUDENTS_SYNC_TABLE)
+    .upsert(rows, { onConflict: "id" });
+  return !error;
+}
+
+async function deleteRemoteStudent(studentId: string): Promise<boolean> {
+  const { error } = await supabase
+    .from(STUDENTS_SYNC_TABLE)
+    .delete()
+    .eq("id", studentId);
+  return !error;
+}
+
+async function getStudentsForAuth(): Promise<Student[]> {
+  const remoteStudents = await fetchRemoteStudents();
+  if (remoteStudents && remoteStudents.length > 0) {
+    saveStoredStudents(remoteStudents);
+    return remoteStudents;
+  }
+
+  return getStoredStudents();
 }
 
 function getStoredStudents(): Student[] {
@@ -647,6 +764,54 @@ function clearLocalAuthUser() {
 
 function normalizeUsername(value: string) {
   return value.trim().toLowerCase();
+}
+
+function isValidEmail(value: string) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
+}
+
+function buildParentAuthEmail(username: string, parentEmail?: string | null) {
+  const directEmail = (parentEmail || "").trim().toLowerCase();
+  if (isValidEmail(directEmail)) {
+    return directEmail;
+  }
+
+  const slug = normalizeUsername(username).replace(/[^a-z0-9._-]/g, "");
+  return `${slug || "parent"}@parents.brightstarschool.local`;
+}
+
+function toLocalParentUser(student: Student): User {
+  return {
+    id: `parent-${student.id}`,
+    name: student.fatherName || student.motherName || student.parentName,
+    email: student.parentEmail || student.parentUsername,
+    role: "parent",
+    studentIds: [student.id],
+  };
+}
+
+async function ensureParentAuthAccount(student: Student, password: string) {
+  const { error } = await supabase.auth.signUp({
+    email: student.parentEmail,
+    password,
+    options: {
+      data: {
+        role: "parent",
+        name: student.parentName,
+        student_ids: [student.id],
+      },
+    },
+  });
+
+  if (!error) {
+    return "created" as const;
+  }
+
+  if (/already registered|already been registered/i.test(error.message)) {
+    return "exists" as const;
+  }
+
+  return "error" as const;
 }
 
 const mockActivities: ActivityType[] = [
@@ -975,10 +1140,10 @@ function AuthProvider({ children }: { children: ReactNode }) {
       return "success";
     }
 
-    const matchedParent = getStoredStudents().find(
+    const syncedStudents = await getStudentsForAuth();
+    const matchedParent = syncedStudents.find(
       (student) =>
-        normalizeUsername(student.parentUsername) === normalizedUsername &&
-        student.parentPassword.trim() === normalizedPassword,
+        normalizeUsername(student.parentUsername) === normalizedUsername,
     );
 
     if (matchedParent) {
@@ -986,17 +1151,41 @@ function AuthProvider({ children }: { children: ReactNode }) {
         return "role_mismatch";
       }
 
-      const localParentUser: User = {
-        id: `parent-${matchedParent.id}`,
-        name:
-          matchedParent.fatherName ||
-          matchedParent.motherName ||
-          matchedParent.parentName,
-        email: matchedParent.parentUsername,
-        role: "parent",
-        studentIds: [matchedParent.id],
-      };
+      const authEmail = buildParentAuthEmail(
+        matchedParent.parentUsername,
+        matchedParent.parentEmail,
+      );
 
+      const { data: parentAuthData, error: parentAuthError } =
+        await supabase.auth.signInWithPassword({
+          email: authEmail,
+          password,
+        });
+
+      if (!parentAuthError && parentAuthData.user) {
+        const profile = await getProfileForUser(
+          parentAuthData.user.id,
+          parentAuthData.user.email,
+        );
+        const mappedParent = mapSupabaseUser(parentAuthData.user, profile);
+
+        if (expectedRole && mappedParent?.role !== expectedRole) {
+          await supabase.auth.signOut();
+          setUser(null);
+          return "role_mismatch";
+        }
+
+        setUser(mappedParent || toLocalParentUser(matchedParent));
+        clearLocalAuthUser();
+        return "success";
+      }
+
+      // Backward-compatibility path for legacy local records.
+      if (matchedParent.parentPassword.trim() !== normalizedPassword) {
+        return "invalid_credentials";
+      }
+
+      const localParentUser = toLocalParentUser(matchedParent);
       setUser(localParentUser);
       saveLocalAuthUser(localParentUser);
       return "success";
@@ -1255,7 +1444,7 @@ function DashboardOverview({
   const fees = getStoredFees();
   const totalStudents = students.length;
   const recentActivities = activities.slice(0, 3);
-  
+
   // Filter activities to show only those from the current month
   const currentDate = new Date();
   const currentMonth = currentDate.getMonth();
@@ -1267,7 +1456,7 @@ function DashboardOverview({
       activityDate.getFullYear() === currentYear
     );
   }).length;
-  
+
   const pendingFees = fees.filter(
     (f) => f.status === "pending" || f.status === "overdue",
   ).length;
@@ -1441,7 +1630,27 @@ function StudentsTab() {
   });
 
   useEffect(() => {
-    setStudents(getStoredStudents());
+    const syncStudents = async () => {
+      const localStudents = getStoredStudents();
+      setStudents(localStudents);
+
+      const remoteStudents = await fetchRemoteStudents();
+      if (remoteStudents === null) {
+        return;
+      }
+
+      if (remoteStudents.length > 0) {
+        setStudents(remoteStudents);
+        saveStoredStudents(remoteStudents);
+        return;
+      }
+
+      if (localStudents.length > 0) {
+        await upsertRemoteStudents(localStudents);
+      }
+    };
+
+    void syncStudents();
   }, []);
 
   const resetForm = () => {
@@ -1504,7 +1713,7 @@ function StudentsTab() {
     }));
   };
 
-  const handleSaveStudent = () => {
+  const handleSaveStudent = async () => {
     const studentName = (newStudent.name || "").trim();
     const fatherName = (newStudent.fatherName || "").trim();
     const motherName = (newStudent.motherName || "").trim();
@@ -1547,8 +1756,26 @@ function StudentsTab() {
     };
 
     const parentUsername = resolveUniqueUsername(baseUsername);
+    const existingStudent = editingStudentId
+      ? students.find((student) => student.id === editingStudentId)
+      : null;
+
     const parentPassword =
-      (newStudent.parentPassword || "").trim() || "Parent@123";
+      (newStudent.parentPassword || "").trim() ||
+      existingStudent?.parentPassword ||
+      "Parent@123";
+
+    if (editingStudentId && (newStudent.parentPassword || "").trim()) {
+      setStudentFormError(
+        "For existing parent accounts, password changes must be done using Supabase password reset.",
+      );
+      return;
+    }
+
+    const parentAuthEmail = buildParentAuthEmail(
+      parentUsername,
+      newStudent.parentEmail,
+    );
     const registrationNumber =
       (newStudent.registrationNumber || "").trim() ||
       `BOM-${new Date().getFullYear()}-${String(students.length + 1).padStart(3, "0")}`;
@@ -1568,10 +1795,12 @@ function StudentsTab() {
       fatherPhone,
       motherPhone,
       parentName: `${fatherName} / ${motherName}`,
-      parentEmail: newStudent.parentEmail || "",
+      parentEmail: parentAuthEmail,
       parentPhone: fatherPhone,
       parentUsername,
-      parentPassword,
+      parentPassword: editingStudentId
+        ? existingStudent?.parentPassword || ""
+        : "",
       address: newStudent.address || "",
       registrationNumber,
       photoUrl:
@@ -1590,8 +1819,27 @@ function StudentsTab() {
         )
       : [...students, prepared];
 
+    const parentAuthResult = await ensureParentAuthAccount(
+      prepared,
+      parentPassword,
+    );
+    if (parentAuthResult === "error") {
+      setStudentFormError(
+        "Unable to create parent login in Supabase Auth. Check the email/username and try again.",
+      );
+      return;
+    }
+
     setStudents(updatedStudents);
     saveStoredStudents(updatedStudents);
+
+    const synced = await upsertRemoteStudents(updatedStudents);
+    if (!synced) {
+      setStudentFormError(
+        "Saved on this device, but cloud sync failed. Please verify Supabase table and network.",
+      );
+    }
+
     setDialogOpen(false);
     resetForm();
   };
@@ -1602,7 +1850,7 @@ function StudentsTab() {
     setDialogOpen(true);
   };
 
-  const handleDeleteStudent = (studentId: string) => {
+  const handleDeleteStudent = async (studentId: string) => {
     const confirmed = window.confirm(
       "Delete this student and parent credentials?",
     );
@@ -1615,6 +1863,13 @@ function StudentsTab() {
     );
     setStudents(updatedStudents);
     saveStoredStudents(updatedStudents);
+
+    const deleted = await deleteRemoteStudent(studentId);
+    if (!deleted) {
+      setStudentFormError(
+        "Removed on this device, but cloud delete failed. Please retry.",
+      );
+    }
   };
 
   return (
@@ -1662,11 +1917,15 @@ function StudentsTab() {
                         type="number"
                         min="2"
                         max="6"
+                        step="0.1"
                         value={newStudent.age}
                         onChange={(e) =>
                           setNewStudent({
                             ...newStudent,
-                            age: parseInt(e.target.value),
+                            age:
+                              e.target.value === ""
+                                ? undefined
+                                : parseFloat(e.target.value),
                           })
                         }
                       />
@@ -1898,7 +2157,10 @@ function StudentsTab() {
                     />
                   </div>
 
-                  <Button onClick={handleSaveStudent} className="w-full">
+                  <Button
+                    onClick={() => void handleSaveStudent()}
+                    className="w-full"
+                  >
                     {editingStudentId ? "Save Changes" : "Add Student"}
                   </Button>
                 </div>
@@ -1980,7 +2242,7 @@ function StudentsTab() {
                       <div className="space-y-1 text-xs">
                         <p className="font-medium">{student.parentUsername}</p>
                         <p className="text-muted-foreground">
-                          {student.parentPassword}
+                          Password secured in Supabase Auth
                         </p>
                       </div>
                     </TableCell>
@@ -2016,7 +2278,7 @@ function StudentsTab() {
                         <Button
                           variant="destructive"
                           size="sm"
-                          onClick={() => handleDeleteStudent(student.id)}
+                          onClick={() => void handleDeleteStudent(student.id)}
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </Button>

@@ -15,10 +15,10 @@ import "slick-carousel/slick/slick-theme.css";
 
 // Import images
 import admissionImage from "../../imports/Poster6.jpeg";
-import smartClassroom from "../../imports/Image_5.jpeg";
-import indoorPlay from "../../imports/Image_2.jpeg";
+const smartClassroom = "/VG6_1769.JPG";
+const indoorPlay = "/VG6_1737.JPG";
 import ballPool from "../../imports/Image_3.jpeg";
-import toddlerActivity from "../../imports/Image_4.jpeg";
+const toddlerActivity = "/VG6_1694.JPG";
 
 interface SlideData {
   id: number;
@@ -123,7 +123,7 @@ const slides: SlideData[] = [
   },
   {
     id: 6,
-    image: "/School_Promo_2.jpeg",
+    image: "/VG6_1610.JPG",
     headline: "A Bright and Caring Preschool Campus",
     subheading:
       "Discover a safe, joyful environment where children learn, explore, and grow every day.",

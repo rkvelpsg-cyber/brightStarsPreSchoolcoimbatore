@@ -6,7 +6,7 @@ export function About() {
     <section id="about" className="page-section page-section-blue py-20">
       <div className="container mx-auto px-4 md:px-6">
         <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
+          <h2 className="mx-auto w-full px-2 text-3xl sm:text-4xl md:text-5xl font-bold leading-tight md:whitespace-nowrap mb-4 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
             About Birla Open Minds Preschool And Day Care
           </h2>
           <div className="w-24 h-1 bg-gradient-to-r from-yellow-400 to-orange-400 mx-auto rounded-full"></div>
@@ -17,7 +17,7 @@ export function About() {
           <div className="relative">
             <div className="relative rounded-3xl overflow-hidden shadow-2xl transform hover:scale-105 transition-transform duration-300">
               <ImageWithFallback
-                src="https://images.unsplash.com/photo-1544776193-352d25ca82cd?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx0ZWFjaGVyJTIwY2hpbGRyZW4lMjBsZWFybmluZ3xlbnwxfHx8fDE3NzMyMTMyODl8MA&ixlib=rb-4.1.0&q=80&w=1080"
+                src="/VG6_1806.JPG"
                 alt="Teacher with children"
                 className="w-full h-auto object-cover"
               />
