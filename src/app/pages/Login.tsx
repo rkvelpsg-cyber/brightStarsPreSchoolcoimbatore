@@ -791,6 +791,26 @@ function toLocalParentUser(student: Student): User {
   };
 }
 
+async function getParentFallbackUserByIdentifier(
+  identifier?: string | null,
+): Promise<User | null> {
+  const normalized = normalizeUsername(identifier || "");
+  if (!normalized) {
+    return null;
+  }
+
+  const students = await getStudentsForAuth();
+  const matchedStudent = students.find((student) => {
+    const emailMatch =
+      normalizeUsername(student.parentEmail || "") === normalized;
+    const usernameMatch =
+      normalizeUsername(student.parentUsername || "") === normalized;
+    return emailMatch || usernameMatch;
+  });
+
+  return matchedStudent ? toLocalParentUser(matchedStudent) : null;
+}
+
 async function ensureParentAuthAccount(student: Student, password: string) {
   const { error } = await supabase.auth.signUp({
     email: student.parentEmail,
@@ -1077,7 +1097,15 @@ function AuthProvider({ children }: { children: ReactNode }) {
         return;
       }
 
-      setUser(mapSupabaseUser(session.user, profile));
+      const mappedUser = mapSupabaseUser(session.user, profile);
+      if (mappedUser) {
+        setUser(mappedUser);
+      } else {
+        const parentFallback = await getParentFallbackUserByIdentifier(
+          session.user.email,
+        );
+        setUser(parentFallback);
+      }
 
       setIsLoading(false);
     };
@@ -1106,7 +1134,15 @@ function AuthProvider({ children }: { children: ReactNode }) {
         return;
       }
 
-      setUser(mapSupabaseUser(session.user, profile));
+      const mappedUser = mapSupabaseUser(session.user, profile);
+      if (mappedUser) {
+        setUser(mappedUser);
+      } else {
+        const parentFallback = await getParentFallbackUserByIdentifier(
+          session.user.email,
+        );
+        setUser(parentFallback);
+      }
     });
 
     return () => {
@@ -1224,8 +1260,17 @@ function AuthProvider({ children }: { children: ReactNode }) {
     const profile = await getProfileForUser(data.user.id, data.user.email);
     const mapped = mapSupabaseUser(data.user, profile);
     if (!mapped) {
-      await supabase.auth.signOut();
-      return "invalid_credentials";
+      const parentFallback = await getParentFallbackUserByIdentifier(
+        data.user.email,
+      );
+      if (!parentFallback) {
+        await supabase.auth.signOut();
+        return "invalid_credentials";
+      }
+
+      setUser(parentFallback);
+      clearLocalAuthUser();
+      return "success";
     }
 
     if (expectedRole && mapped.role !== expectedRole) {

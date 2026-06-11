@@ -4,7 +4,7 @@
 create table if not exists public.student_credentials (
   id text primary key,
   name text not null,
-  age integer not null default 3,
+  age numeric(4,1) not null default 3,
   father_name text,
   mother_name text,
   father_phone text,
@@ -32,6 +32,9 @@ alter table public.student_credentials
 
 alter table public.student_credentials
   add column if not exists parent_password text;
+
+alter table public.student_credentials
+  alter column age type numeric(4,1) using age::numeric;
 
 update public.student_credentials
 set parent_auth_email = coalesce(
