@@ -256,7 +256,7 @@ type StudentCredentialRow = {
   parent_auth_email: string | null;
   parent_phone: string | null;
   parent_username: string | null;
-  parent_password?: string | null;
+  parent_password: string | null;
   address: string | null;
   registration_number: string | null;
   photo_url: string | null;
@@ -421,6 +421,7 @@ function mapStudentToRow(student: Student): StudentCredentialRow {
     parent_auth_email: student.parentEmail,
     parent_phone: normalizePhoneDigits(student.parentPhone),
     parent_username: student.parentUsername,
+    parent_password: student.parentPassword,
     address: student.address,
     registration_number: student.registrationNumber,
     photo_url: student.photoUrl,
@@ -433,7 +434,7 @@ async function fetchRemoteStudents(): Promise<Student[] | null> {
   const { data, error } = await supabase
     .from(STUDENTS_SYNC_TABLE)
     .select(
-      "id,name,age,father_name,mother_name,father_phone,mother_phone,parent_name,parent_email,parent_auth_email,parent_phone,parent_username,address,registration_number,photo_url,class_name,admission_date",
+      "id,name,age,father_name,mother_name,father_phone,mother_phone,parent_name,parent_email,parent_auth_email,parent_phone,parent_username,parent_password,address,registration_number,photo_url,class_name,admission_date",
     )
     .order("created_at", { ascending: true });
 
@@ -1175,12 +1176,32 @@ function AuthProvider({ children }: { children: ReactNode }) {
           return "role_mismatch";
         }
 
-        setUser(mappedParent || toLocalParentUser(matchedParent));
+        const resolvedParentUser =
+          mappedParent && mappedParent.role === "parent"
+            ? {
+                ...mappedParent,
+                name:
+                  mappedParent.name ||
+                  matchedParent.fatherName ||
+                  matchedParent.motherName ||
+                  matchedParent.parentName,
+                email:
+                  mappedParent.email ||
+                  matchedParent.parentEmail ||
+                  matchedParent.parentUsername,
+                studentIds:
+                  mappedParent.studentIds && mappedParent.studentIds.length > 0
+                    ? mappedParent.studentIds
+                    : [matchedParent.id],
+              }
+            : toLocalParentUser(matchedParent);
+
+        setUser(resolvedParentUser);
         clearLocalAuthUser();
         return "success";
       }
 
-      // Backward-compatibility path for legacy local records.
+      // Shared fallback path to support admin-assigned student credentials.
       if (matchedParent.parentPassword.trim() !== normalizedPassword) {
         return "invalid_credentials";
       }
@@ -1765,13 +1786,6 @@ function StudentsTab() {
       existingStudent?.parentPassword ||
       "Parent@123";
 
-    if (editingStudentId && (newStudent.parentPassword || "").trim()) {
-      setStudentFormError(
-        "For existing parent accounts, password changes must be done using Supabase password reset.",
-      );
-      return;
-    }
-
     const parentAuthEmail = buildParentAuthEmail(
       parentUsername,
       newStudent.parentEmail,
@@ -1798,9 +1812,7 @@ function StudentsTab() {
       parentEmail: parentAuthEmail,
       parentPhone: fatherPhone,
       parentUsername,
-      parentPassword: editingStudentId
-        ? existingStudent?.parentPassword || ""
-        : "",
+      parentPassword,
       address: newStudent.address || "",
       registrationNumber,
       photoUrl:
@@ -2242,7 +2254,7 @@ function StudentsTab() {
                       <div className="space-y-1 text-xs">
                         <p className="font-medium">{student.parentUsername}</p>
                         <p className="text-muted-foreground">
-                          Password secured in Supabase Auth
+                          {student.parentPassword || "Parent@123"}
                         </p>
                       </div>
                     </TableCell>

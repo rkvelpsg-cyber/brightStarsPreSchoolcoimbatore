@@ -1,5 +1,5 @@
 -- Cross-device parent credential sync for admin-managed student accounts.
--- Parent passwords are managed in Supabase Auth and are never stored in this table.
+-- Parent passwords are stored for admin visibility and shared-login fallback.
 
 create table if not exists public.student_credentials (
   id text primary key,
@@ -14,6 +14,7 @@ create table if not exists public.student_credentials (
   parent_auth_email text,
   parent_phone text,
   parent_username text not null,
+  parent_password text,
   address text,
   registration_number text,
   photo_url text,
@@ -29,6 +30,9 @@ alter table public.student_credentials
 alter table public.student_credentials
   add column if not exists parent_email text;
 
+alter table public.student_credentials
+  add column if not exists parent_password text;
+
 update public.student_credentials
 set parent_auth_email = coalesce(
   nullif(trim(parent_auth_email), ''),
@@ -36,6 +40,10 @@ set parent_auth_email = coalesce(
   nullif(trim(parent_username), '')
 )
 where coalesce(nullif(trim(parent_auth_email), ''), '') = '';
+
+update public.student_credentials
+set parent_password = 'Parent@123'
+where coalesce(nullif(trim(parent_password), ''), '') = '';
 
 create unique index if not exists student_credentials_parent_username_idx
   on public.student_credentials (lower(parent_username));
